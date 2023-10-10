@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "eww-bot"
+version = "0.1.0"
+description = "A Discord bot for managing Guild Wars 2 WvW Guilds"
+authors = ["harasho"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+"discord.py" = "^2.3.2"
+gspread = "^5.11.3"
+google-auth = "^2.23.2"
+tabulate = "^0.9.0"
+requests = "^2.31.0"
+peewee = "^3.16.3"
+inflection = "^0.5.1"
+bs4 = "^0.0.1"
+feedparser = "^6.0.10"
+thefuzz = "^0.20.0"
+tqdm = "^4.66.1"
+aiohttp = "^3.8.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

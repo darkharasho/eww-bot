@@ -1,0 +1,16 @@
+{
+    "Token": "",
+    "Guild": "",
+    "Guild-ID": 1234,
+    "Channel-ID": 1234,
+    "UpdateChannelID": 1234,
+    "AttendanceJsonFile": "attendance.json",
+    "DiscordChannels": ["", "", ""],
+    "AllowedRoles": ["", "", "", ""],
+    "GoogleCredsFile": "config/google_creds.json",
+    "GoogleSheetName": "Comp Builds",
+    "AutoAttendance": "false",
+    "GuildMemberRole": "Member",
+    "DisabledModules": [],
+    "ApplicationID": 123
+}

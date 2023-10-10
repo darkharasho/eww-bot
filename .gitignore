@@ -1,0 +1,47 @@
+# Ignore compiled files and directories
+*.pyc
+__pycache__/
+*.pyo
+*.egg-info/
+dist/
+build/
+.vscode/
+.idea/
+
+# Ignore virtual environments
+venv/
+.env/
+
+# Ignore OS-generated files
+.DS_Store
+Thumbs.db
+
+# Ignore log files
+*.log
+
+# Ignore user-specific files
+*.swp
+
+# Ignore configuration files
+*.config
+
+# Ignore package manager files
+node_modules/
+yarn-error.log
+
+# Ignore database files
+*.sqlite
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Include specific file(s) - Adjust the path as needed
+config/config.json
+config/config.json.prod
+config/config.json.dev
+config/eww-bot-google-service.json
+attendance.json
+attendance.json.old
+.DS_Store
+src/cogs/example_cog.py
+*.db
