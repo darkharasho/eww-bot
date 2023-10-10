@@ -120,6 +120,7 @@ class SetMultiConfigView(discord.ui.View):
                 elif self.response_type == "gw2_classes":
                     content = []
                     gw2_class_selections = list(set(filter(None, re.sub(r'[ ,]', ', ', msg.content).split(", "))))
+                    gw2_class_selections = [int(x) for x in gw2_class_selections]
                     gw2_class_selections.sort()
                     for opt in gw2_class_selections:
                         for field in embed.fields:
