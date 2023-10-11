@@ -1,4 +1,4 @@
-![eww-bot-banner](https://github.com/darkharasho/eww-bot/assets/144265798/29358962-0586-4f24-acc6-f3f039b97d9c)
+![eww bot half page](https://github.com/darkharasho/eww-bot/assets/144265798/36832218-b1e3-4606-8483-057c50197a6f)
 
 # Discord bot for WvW Guild Management
 
