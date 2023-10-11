@@ -71,8 +71,8 @@ class SetKeyCog(commands.Cog):
             await suc.update_capture_count(db_member)
             await suc.update_rank_count(db_member)
             await suc.update_deaths_count(db_member)
-            await suc.update_supply_spent(member)
-            await suc.update_yaks_escorted(member)
+            await suc.update_supply_spent(db_member)
+            await suc.update_yaks_escorted(db_member)
 
             await interaction.followup.send(
                 embed=discord.Embed(
