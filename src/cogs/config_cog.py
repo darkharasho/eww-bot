@@ -5,6 +5,7 @@ from src import helpers
 from src import authorization
 from src.bot_client import bot
 from src.views import set_config_view
+from src.views import edit_config_view
 
 
 class ConfigCog(commands.Cog):
@@ -27,6 +28,8 @@ class ConfigCog(commands.Cog):
             pass
         if option == "set_config":
             await self.set_config(interaction)
+        elif option == "edit_config":
+            await self.edit_config(interaction)
         elif option == "member_update":
             embed = await self.members_update()
             await dm_channel.send(embed=embed)
@@ -48,6 +51,21 @@ class ConfigCog(commands.Cog):
 
         msg = await dm_channel.send(embed=embed)
         view = set_config_view.SetConfigView(embed, msg)
+        await msg.edit(embed=embed, view=view)
+
+    @staticmethod
+    async def edit_config(interaction):
+        dm_channel = await interaction.user.create_dm()
+
+        embed = discord.Embed(
+            title="️⚠️ Edit Config",
+            description="```Please choose the config below you would like to edit```",
+            color=0xffcc4d
+        )
+        embed.set_author(name=interaction.user.name, icon_url=interaction.user.avatar.url)
+
+        msg = await dm_channel.send(embed=embed)
+        view = edit_config_view.EditConfigView(embed, msg)
         await msg.edit(embed=embed, view=view)
 
     async def members_update(self):

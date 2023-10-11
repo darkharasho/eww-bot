@@ -2,6 +2,7 @@
 import json
 
 import discord
+from discord import SelectMenu, SelectOption
 
 # Configuration variables
 raw_config = open('config/config.json')
@@ -33,9 +34,69 @@ MODULES = [
     "toggle-soundboard"
 ]
 
+CONFIG_OPTIONS = [
+    SelectOption(label="Guild Member Role",
+                 value="GuildMemberRole",
+                 description="Used In: Attendance, Raid Notifications, Raid Reminders",
+                 emoji="🛡️"),
+    SelectOption(label="Disable Module",
+                 value="DisableModule",
+                 description="Used In: None - Disables a module so the slash command is inaccessible",
+                 emoji="❌"),
+    SelectOption(label="Allowed Admin Roles",
+                 value="AllowedAdminRoles",
+                 description="Used In: All - which roles are allowed to run all bot commands",
+                 emoji="👑"),
+    SelectOption(label="Build Manager Roles",
+                 value="BuildManagerRoles",
+                 description="Used In: set-build, import-builds - which roles are allowed to run all build commands",
+                 emoji="🦺"),
+    SelectOption(label="Commander Roles",
+                 value="CommanderRoles",
+                 description="Used In: raid-notifications - which roles are allowed to run all raid commands",
+                 emoji="🔰"),
+    SelectOption(label="Raid Days",
+                 value="RaidDays",
+                 description="Used In: Raid Reminder, Attendance, Auto Attendance",
+                 emoji="⚔️"),
+    SelectOption(label="Build Forum Channel",
+                 value="BuildForumChannel",
+                 description="Used In: Set Build, Import Builds",
+                 emoji="💬"),
+    SelectOption(label="Build Update Channel",
+                 value="BuildUpdateChannel",
+                 description="Used In: Set Build, Import Builds",
+                 emoji="🔔"),
+    SelectOption(label="Auto Attendance",
+                 value="AutoAttendance",
+                 description="Requires: Attendance Module, Show Attendance Module",
+                 emoji="📋"),
+    SelectOption(label="Raid Notifications",
+                 value="RaidNotification",
+                 description="Used In: Raid Notification",
+                 emoji="💥"),
+    SelectOption(label="Raid Reminders",
+                 value="RaidReminder",
+                 description="Requires: Raid Days - Sets up a timed reminder post for your raid schedule.",
+                 emoji="🎮"),
+    SelectOption(label="Vod Review Channel",
+                 value="ReviewForumChannel",
+                 description="Used In: Propose - Which forum channel your vod reviews live in.",
+                 emoji="🎬"),
+    SelectOption(label="ArcDPS Updates",
+                 value="ArcdpsUpdates",
+                 description="Automatic notifications for ArcDPS updates",
+                 emoji="🧮"),
+    SelectOption(label="Game Update Notifications",
+                 value="GameUpdates",
+                 description="Automatic notifications for Guild Wars 2 updates",
+                 emoji="📰")
+]
+
 SET_BUILD_UPDATE_CHANNEL =[
     {
         "text": "# Channel to post build updates:",
+        "key": "$SINGLE - channel_id",
         "field_type": "input",
         "response_type": "text_channel"
     }
@@ -44,17 +105,20 @@ SET_BUILD_UPDATE_CHANNEL =[
 AUTO_ATTENDANCE_CONFIG = questions = [
     {
         "text": "# Enabled?",
+        "key": "enabled",
         "field_type": "select",
         "options": [True, False],
         "response_type": bool
     },
     {
         "text": "# Channel to send attendance sheet:",
+        "key": "channel_id",
         "field_type": "input",
         "response_type": "text_channel"
     },
     {
         "text": "# Time to run\n### In 24hr format UTC, ex: 1:05 is 6:05pm PST",
+        "key": "time",
         "field_type": "input",
         "response_type": "time"
     }
@@ -63,11 +127,13 @@ AUTO_ATTENDANCE_CONFIG = questions = [
 RAID_NOTIFICATION_CONFIG = [
     {
         "text": "# Roles to ping",
+        "key": "role_ids",
         "field_type": "input",
         "response_type": "roles"
     },
     {
         "text": "# Open Tag Roles to ping",
+        "key": "open_tag_role_ids",
         "field_type": "input",
         "response_type": "roles"
     }
@@ -76,32 +142,38 @@ RAID_NOTIFICATION_CONFIG = [
 RAID_REMINDER_CONFIG = [
     {
         "text": "# Channel to post the reminder",
+        "key": "channel_id",
         "field_type": "input",
         "response_type": "text_channel"
     },
     {
         "text": "# Roles to ping",
+        "key": "role_ids",
         "field_type": "input",
         "response_type": "roles"
     },
     {
         "text": "# Style of the table",
+        "key": "table_style",
         "field_type": "select",
         "options": ["fancy_grid", "simple", "list_view"]
     },
     {
         "text": "# Hide empty rows?",
+        "key": "hide_empty_rows",
         "field_type": "select",
         "options": [True, False],
         "response_type": bool
     },
     {
         "text": "# Time to Post Notification\n### In 24hr format UTC, ex: 1:05 is 6:05pm PST",
+        "key": "time",
         "field_type": "input",
         "response_type": "time"
     },
     {
         "text": "# Classes\n### Max: 25\n(list all numbers)",
+        "key": "classes",
         "field_type": "input",
         "response_type": "gw2_classes"
     }
@@ -110,12 +182,14 @@ RAID_REMINDER_CONFIG = [
 SET_ARCDPS_UPDATES = [
     {
         "text": "# Enabled?",
+        "key": "enabled",
         "field_type": "select",
         "options": [True, False],
         "response_type": bool
     },
     {
         "text": "# Channel to post the updates in",
+        "key": "channel_id",
         "field_type": "input",
         "response_type": "text_channel"
     }
@@ -124,12 +198,14 @@ SET_ARCDPS_UPDATES = [
 SET_GAME_UPDATES = [
     {
         "text": "# Enabled?",
+        "key": "enabled",
         "field_type": "select",
         "options": [True, False],
         "response_type": bool
     },
     {
         "text": "# Channel to post the updates in",
+        "key": "channel_id",
         "field_type": "input",
         "response_type": "text_channel"
     }
@@ -138,6 +214,7 @@ SET_GAME_UPDATES = [
 SET_COMMANDER_ROLES = [
     {
         "text": "# Commander Roles",
+        "key": "$LIST",
         "field_type": "input",
         "response_type": "roles"
     }

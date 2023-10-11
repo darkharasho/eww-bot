@@ -367,6 +367,7 @@ async def raid_notification(interaction, channel: discord.TextChannel, wvw_map: 
 )
 @app_commands.choices(option=[
     app_commands.Choice(name='Set Configuration', value='set_config'),
+    app_commands.Choice(name='Edit Configuration', value='edit_config'),
     app_commands.Choice(name='Update members', value='member_update'),
     app_commands.Choice(name='Show Configuration', value="show")
 ])

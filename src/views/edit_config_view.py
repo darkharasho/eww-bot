@@ -11,7 +11,7 @@ from src.views import set_multi_config_view
 options = settings.CONFIG_OPTIONS
 
 
-class SetConfigView(discord.ui.View):
+class EditConfigView(discord.ui.View):
     def __init__(self, embed, msg):
         super().__init__(timeout=None)
         self.msg = msg
@@ -26,6 +26,7 @@ class SetConfigView(discord.ui.View):
         selected_option = interaction.data['values'][0]
 
         if selected_option == "GuildMemberRole":
+            # selected_field = get_edit_field(config_name="GuildMemberRole", config_settings=settings.GU)
             role_options = self.role_select()
             self.clear_items()
             self.embed.description = "```Guild Member Role:\nPlease select the main role for guild members below.```"
@@ -131,10 +132,11 @@ class SetConfigView(discord.ui.View):
                     )
                 )
             self.clear_items()
-            self.embed.description = ("```Vod Review Channel:\nWhich channel your members post their videos for review```")
+            self.embed.description = (
+                "```Vod Review Channel:\nWhich channel your members post their videos for review```")
             self.add_item(item=discord.ui.Select(placeholder="Select Review Forum Channel...",
                                                  options=review_channel_options))
-        elif selected_option == "BuildForumChannel":
+        elif selected_option == "Build Forum Channel":
             build_channel_options = []
             for forum in self.guild.forums:
                 build_channel_options.append(
@@ -149,21 +151,12 @@ class SetConfigView(discord.ui.View):
             self.add_item(item=discord.ui.Select(placeholder="Select Build Forum Channel...",
                                                  options=build_channel_options))
         elif selected_option == "BuildUpdateChannel":
-            answer_key = ["build_update_channel_id"]
-            answers = {}
-            for index, question in enumerate(settings.SET_BUILD_UPDATE_CHANNEL, start=0):
-                question_view = set_multi_config_view.SetMultiConfigView(config_name=selected_option,
-                                                                         question=question,
-                                                                         channel=interaction.channel,
-                                                                         user=interaction.user)
-                answer = await question_view.send_question(index)
-                answers[answer_key[index]] = answer
-                if answer == "APPLICATION_CANCEL":
-                    break
-            self.clear_items()
-            await self.set_generic_channel_config(name="build_update_channel_id",
-                                                  value=answers["build_update_channel_id"],
-                                                  send_response=False)
+            settings_key = await self.get_edit_field(
+                config_name="build_update_channel_id",
+                config_settings=settings.SET_BUILD_UPDATE_CHANNEL,
+                config_display_name="Build Update Channel"
+            )
+
         # Start of Multi Configs
         elif selected_option == "AutoAttendance":
             answer_key = ["enabled", "channel_id", "time"]
@@ -436,3 +429,56 @@ class SetConfigView(discord.ui.View):
                                       value=answers,
                                       send_response=False)
         self.embed.description = description
+
+    async def get_edit_field(self, config_name=None, config_settings=None, config_display_name=None):
+        options = []
+        for index, question in enumerate(config_settings, start=0):
+            options.append(SelectOption(label=question["text"], value=question["key"]))
+
+        self.clear_items()
+        self.embed.title = f"⚠️ Edit Config - {config_display_name}"
+        self.embed.description = "```Please choose the field below you would like to edit```"
+        self.add_item(item=discord.ui.Select(placeholder="Select Field...", options=options))
+
+        await self.msg.channel.send(embed=self.embed, view=self)
+
+        events = [
+            bot.wait_for('interaction',
+                         check=lambda inter: inter.channel == self.msg.channel)
+        ]
+
+        # with asyncio.FIRST_COMPLETED, this triggers as soon as one of the events is fired
+        done, pending = await asyncio.wait(events, return_when=asyncio.FIRST_COMPLETED)
+        event = done.pop().result()
+        try:
+            await event.response.defer()
+        except:
+            pass
+
+        # cancel the other check
+        for future in pending:
+            future.cancel()
+
+        selected_option = event["values"][0]
+
+        for setting in config_settings:
+            if settings_key == setting["key"]:
+                selected_field = setting
+
+        question_view = set_multi_config_view.SetMultiConfigView(config_name=selected_option,
+                                                                 question=selected_field,
+                                                                 channel=interaction.channel,
+                                                                 user=interaction.user)
+        answer = await question_view.send_question(index)
+        if answer == "APPLICATION_CANCEL":
+            return
+
+        if "$SINGLE" in selected_option:
+            answers = answer
+        else:
+            answers = Config.select().where(Config.name)
+
+        self.clear_items()
+        await self.set_generic_channel_config(name=config_name,
+                                              value=answers["build_update_channel_id"],
+                                              send_response=False)
