@@ -52,6 +52,15 @@ class DBMigrate():
             migrations.append(["🟡", "Member", "created_at"])
             migrations.append(["🟡", "Member", "updated_at"])
             pass
+        try:
+            with self.db.atomic():
+                migrate(
+                    migrator.add_column('member', 'user_id', Member.user_id)
+                )
+                migrations.append(["🟢", "Member", "user_id"])
+        except OperationalError as oe:
+            migrations.append(["🟡", "Member", "user_id"])
+            pass
 
         return migrations
 

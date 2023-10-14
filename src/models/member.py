@@ -14,6 +14,7 @@ class Member(BaseModel):
     username = CharField(unique=True)
     guild_id = IntegerField()
     discord_id = IntegerField(unique=True)
+    user_id = IntegerField(null=True)
     gw2_api_key = CharField(null=True)
     gw2_stats = JSONField(null=True)
     gw2_username = CharField(null=True)

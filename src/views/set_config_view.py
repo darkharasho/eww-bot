@@ -267,7 +267,10 @@ class SetConfigView(discord.ui.View):
                                                                   "reminders. Note: you will need to"
                                                                   "reload the bot after changes.```")
 
-            await bot.reload_extension("src.tasks.raid_reminder_task")
+            try:
+                await bot.reload_extension("src.tasks.raid_reminder_task")
+            except:
+                pass
 
         elif selected_option == "RaidNotification":
             role_options = self.role_select()
