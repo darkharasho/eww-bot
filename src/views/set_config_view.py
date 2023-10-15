@@ -298,8 +298,10 @@ class SetConfigView(discord.ui.View):
             await self.set_generic_config(name="arcdps_updates",
                                           value=answers,
                                           send_response=False)
-
-            await bot.reload_extension("src.cogs.arcdps_updates_cog")
+            try:
+                await bot.reload_extension("src.cogs.arcdps_updates_cog")
+            except:
+                pass
 
         elif selected_option == "GameUpdates":
             answer_key = ["enabled", "channel_id"]
@@ -319,7 +321,10 @@ class SetConfigView(discord.ui.View):
                                           value=answers,
                                           send_response=False)
 
-            await bot.reload_extension("src.cogs.game_updates_cog")
+            try:
+                await bot.reload_extension("src.cogs.game_updates_cog")
+            except:
+                pass
 
         await self.msg.channel.send(embed=self.embed, view=self)
 

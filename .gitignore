@@ -44,4 +44,5 @@ attendance.json
 attendance.json.old
 .DS_Store
 src/cogs/example_cog.py
-*.db
+*.db*
+
