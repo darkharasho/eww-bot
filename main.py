@@ -1,5 +1,6 @@
 # main.py
 import importlib
+import uvicorn
 from config.imports import *
 from discord.ext import commands
 from src import settings
@@ -7,9 +8,11 @@ from src import authorization
 from src import helpers
 from src.bot_client import bot
 from src.db_migrate import DBMigrate
+from fastapi import FastAPI, HTTPException
 
 global guild
 tree = bot.tree
+app = FastAPI()
 
 
 @bot.event
@@ -85,7 +88,7 @@ async def on_ready():
     print(f'[CONNECTED]    🟢 {guild.name}(id: {guild.id})')
     # await command
     await tree.sync(guild=discord.Object(id=settings.GUILD_ID))
-    print("[FINISH] ♾️ All Commands Loaded")
+    print("[FINISH]       ♾️ All Commands Loaded")
 
 
 ##################################
@@ -416,4 +419,52 @@ async def hack(ctx, *, arg):
             await dm_channel.send(embed=embed)
 
 
-bot.run(settings.TOKEN)
+@app.post("/reload_commands")
+async def reload_commands():
+    print("[Info]         ♾️ Command Reload Triggered")
+    print("--------------------------------------------")
+    # Load Cog Extensions
+    for f in os.listdir("./src/cogs"):
+        cog = f[:-3]
+        if f.endswith(".py"):
+            cmd = re.sub(r'_', '-', cog[:-4])
+            try:
+                await bot.load_extension("src.cogs." + cog)
+                print("[COG LOADED]   🟢 cogs." + cog)
+            except Exception as e:
+                if cmd in Config.disabled_modules():
+                    tree.remove_command(cmd, guild=discord.Object(id=settings.GUILD_ID))
+                    await bot.unload_extension("src.cogs." + cog)
+                    print("[DISABLED]     🟡 cogs." + cog)
+                else:
+                    pass
+    print("--------------------------------------------")
+    for f in os.listdir("./src/tasks"):
+        cog = f[:-3]
+        if f.endswith(".py"):
+            cmd = re.sub(r'_', '-', cog[:-4])
+            try:
+                await bot.load_extension("src.tasks." + cog)
+                print("[TASK LOADED]  🟢 tasks." + cog)
+            except Exception as e:
+                if cmd in Config.disabled_modules():
+                    tree.remove_command(cmd, guild=discord.Object(id=settings.GUILD_ID))
+                    await bot.unload_extension("src.tasks." + cog)
+                    print("[DISABLED]     🟡 tasks." + cog)
+                else:
+                    pass
+    # await command
+    await tree.sync(guild=discord.Object(id=settings.GUILD_ID))
+    print("[FINISH]       ♾️ All Commands Loaded")
+
+    return True
+
+
+async def run():
+    try:
+        await bot.start(settings.TOKEN)
+    except KeyboardInterrupt:
+        await bot.logout()
+
+
+asyncio.create_task(run())

@@ -9,6 +9,10 @@ Made with ❤️ by Engaging Without Warning [EWW]
 ## Looking for more info?
 [Check out the Wiki!](https://github.com/darkharasho/eww-bot/wiki)
 
+## Start the App
+```commandline
+poetry run uvicorn main:app --reload --port 8000 --host 0.0.0.0
+```
 
 ## Todo list
 
