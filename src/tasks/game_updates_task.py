@@ -11,9 +11,8 @@ from bs4 import BeautifulSoup
 tree = bot.tree
 
 
-class GameUpdatesCog(commands.Cog):
+class GameUpdatesTask(commands.Cog):
     def __init__(self, bot):
-        self.url = "https://www.deltaconnected.com/arcdps/x64/"
         self.bot = bot
         self.game_updates.start()
         self.guild = self.bot.get_guild(settings.GUILD_ID)
@@ -96,4 +95,4 @@ class GameUpdatesCog(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(GameUpdatesCog(bot), guild=bot.get_guild(settings.GUILD_ID), override=True)
+    await bot.add_cog(GameUpdatesTask(bot), guild=bot.get_guild(settings.GUILD_ID), override=True)

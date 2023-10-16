@@ -79,7 +79,7 @@ def format_absent_for_table(members: list):
 async def attendance_core(channel):
     today = datetime.datetime.today().strftime("%m/%d/%y")
     current_day = datetime.datetime.now().weekday()
-    raid_day = helpers.check_raid_time
+    raid_day = helpers.check_raid_day()
 
     # Increment the attendance count for each member
     attended_current_raid = []

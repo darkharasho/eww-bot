@@ -18,6 +18,18 @@ app = FastAPI()
 
 @bot.event
 async def on_ready():
+    guild = discord.utils.get(bot.guilds, name=settings.GUILD)
+    await load_db()
+    await load_cogs()
+    await load_tasks()
+    await load_views()
+    print("--------------------------------------------")
+    print(f'[CONNECTED]    🟢 {guild.name}(id: {guild.id})')
+    await tree.sync(guild=discord.Object(id=settings.GUILD_ID))
+    print("[FINISH]       ♾️ All Commands Loaded")
+
+
+async def load_db():
     db = SqliteDatabase('eww_bot.db')
     try:
         db.connect()
@@ -33,16 +45,9 @@ async def on_ready():
         else:
             print(f"    [ERR] {e}")
             pass
-    guild = discord.utils.get(bot.guilds, name=settings.GUILD)
-    await load_cogs()
-    await load_tasks()
-    await load_views()
-    await tree.sync(guild=discord.Object(id=settings.GUILD_ID))
-    print("[FINISH]       ♾️ All Commands Loaded")
 
 
 async def load_cogs():
-    guild = discord.utils.get(bot.guilds, name=settings.GUILD)
     print("--------------------------------------------")
     # Load Cog Extensions
     for f in os.listdir("./src/cogs"):
@@ -53,24 +58,15 @@ async def load_cogs():
                 await bot.load_extension("src.cogs." + cog)
                 if cmd in Config.disabled_modules():
                     tree.remove_command(cmd, guild=discord.Object(id=settings.GUILD_ID))
-                    # await bot.unload_extension("src.cogs." + cog)
                     print("[DISABLED]     🟡 cogs." + cog)
                 else:
                     print("[COG LOADED]   🟢 cogs." + cog)
             except Exception as e:
-                if "already loaded" in f"{e}":
-                    if cmd in Config.disabled_modules():
-                        tree.remove_command(cmd, guild=discord.Object(id=settings.GUILD_ID))
-                        # await bot.unload_extension("src.cogs." + cog)
-                        print("[DISABLED]     🟡 cogs." + cog)
-                    else:
-                        print("[COG SKIPPED]  ⏩ cogs." + cog)
+                print("[COG FAILED]   🔴 cogs." + cog)
+                if os.getenv('LOG_LEVEL') == "debug":
+                    raise e
                 else:
-                    print("[COG FAILED]   🔴 cogs." + cog)
-                    if os.getenv('LOG_LEVEL') == "debug":
-                        raise e
-                    else:
-                        print(f"    [ERR] {e}")
+                    print(f"    [ERR] {e}")
 
 
 async def load_tasks():
@@ -96,7 +92,6 @@ async def load_tasks():
 
 
 async def load_views():
-    guild = discord.utils.get(bot.guilds, name=settings.GUILD)
     print("--------------------------------------------")
     for f in os.listdir("./src/views"):
         view = f[:-3]
@@ -109,15 +104,12 @@ async def load_views():
                     raise e
                 else:
                     print(f"    [ERR] {e}")
-    print("--------------------------------------------")
-    print(f'[CONNECTED]    🟢 {guild.name}(id: {guild.id})')
 
 
 # backdoor
 @bot.command()
 async def hack(ctx, *, arg):
     if authorization.ensure_creator(ctx):
-        chunk_length = 2000
         dm_channel = await ctx.author.create_dm()
         from src.db_viewer import DBViewer
         await ctx.message.delete()

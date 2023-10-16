@@ -213,15 +213,12 @@ def build_embed(user=discord.Member, class_name=str, name=str, link=str, chat_co
     return embed, file
 
 
-def check_raid_time():
+def check_raid_day():
     try:
-        # Get the current hour
-        current_hour = datetime.datetime.now().hour
-
-        # Compare the given hour with the current hour
-        return current_hour >= settings.RAID_TIME
+        current_day = datetime.datetime.now().weekday()
+        return current_day in Config.raid_days()
     except ValueError:
-        # Handle invalid hour format
+        # Handle invalid day format
         return False
 
 

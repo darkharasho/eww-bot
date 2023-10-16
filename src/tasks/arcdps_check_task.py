@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 tree = bot.tree
 
 
-class ArcDpsCheckCog(commands.Cog):
+class ArcDpsCheckTask(commands.Cog):
     def __init__(self, bot):
         self.url = "https://www.deltaconnected.com/arcdps/x64/"
         self.bot = bot
@@ -56,5 +56,5 @@ class ArcDpsCheckCog(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(ArcDpsCheckCog(bot), guild=bot.get_guild(settings.GUILD_ID), override=True)
+    await bot.add_cog(ArcDpsCheckTask(bot), guild=bot.get_guild(settings.GUILD_ID), override=True)
 
