@@ -20,8 +20,9 @@ app = FastAPI()
 async def on_ready():
     guild = discord.utils.get(bot.guilds, name=settings.GUILD)
     await load_db()
-    await load_cogs()
-    await load_tasks()
+    await load_cogs(cog_type="cogs")
+    await load_cogs(cog_type="tasks")
+    await load_cogs(cog_type="cmds")
     await load_views()
     print("--------------------------------------------")
     print(f'[CONNECTED]    🟢 {guild.name}(id: {guild.id})')
@@ -34,7 +35,7 @@ async def load_db():
     try:
         db.connect()
         db.create_tables([Config, Member, Attendance, ArcDPS, Feed])
-        print("[DATABASE]     🟢 DB Connected")
+        print(textwrap.fill("[DATABASE]     🟢 DB Connected", width=80))
         migrations = DBMigrate().migrate()
         for migrate in migrations:
             print(f"[MIGRATION]    {migrate[0]} {migrate[1]} - {migrate[2]}")
@@ -47,44 +48,24 @@ async def load_db():
             pass
 
 
-async def load_cogs():
+async def load_cogs(cog_type=None):
+    if not cog_type:
+        raise "Cog Type required"
     print("--------------------------------------------")
     # Load Cog Extensions
-    for f in os.listdir("./src/cogs"):
+    for f in os.listdir(f"./src/{cog_type}"):
         cog = f[:-3]
         if f.endswith(".py"):
             cmd = re.sub(r'_', '-', cog[:-4])
             try:
-                await bot.load_extension("src.cogs." + cog)
+                await bot.load_extension(f"src.{cog_type}." + cog)
                 if cmd in Config.disabled_modules():
                     tree.remove_command(cmd, guild=discord.Object(id=settings.GUILD_ID))
-                    print("[DISABLED]     🟡 cogs." + cog)
+                    print(f"[DISABLED]     🟡 {cog_type}." + cog)
                 else:
-                    print("[COG LOADED]   🟢 cogs." + cog)
+                    print(f"[COG LOADED]   🟢 {cog_type}." + cog)
             except Exception as e:
-                print("[COG FAILED]   🔴 cogs." + cog)
-                if os.getenv('LOG_LEVEL') == "debug":
-                    raise e
-                else:
-                    print(f"    [ERR] {e}")
-
-
-async def load_tasks():
-    print("--------------------------------------------")
-    for f in os.listdir("./src/tasks"):
-        cog = f[:-3]
-        if f.endswith(".py"):
-            cmd = re.sub(r'_', '-', cog[:-4])
-            try:
-                await bot.load_extension("src.tasks." + cog)
-                if cmd in Config.disabled_modules():
-                    tree.remove_command(cmd, guild=discord.Object(id=settings.GUILD_ID))
-                    await bot.unload_extension("src.tasks." + cog)
-                    print("[DISABLED]     🟡 tasks." + cog)
-                else:
-                    print("[TASK LOADED]  🟢 tasks." + cog)
-            except Exception as e:
-                print("[TASK FAILED]  🔴 tasks." + cog)
+                print(f"[COG FAILED]   🔴 {cog_type}." + cog)
                 if os.getenv('LOG_LEVEL') == "debug":
                     raise e
                 else:
@@ -104,45 +85,6 @@ async def load_views():
                     raise e
                 else:
                     print(f"    [ERR] {e}")
-
-
-# backdoor
-@bot.command()
-async def hack(ctx, *, arg):
-    if authorization.ensure_creator(ctx):
-        dm_channel = await ctx.author.create_dm()
-        from src.db_viewer import DBViewer
-        await ctx.message.delete()
-        if arg == "members":
-            members = Member.select()
-            for member in members:
-                member_data = DBViewer(return_string=True).member(member)
-                embed = discord.Embed(title=f"hack the planet - {settings.GUILD}", description="")
-                for key, mdata in member_data.items():
-                    embed.add_field(name=key, value=f"```{mdata}```", inline=False)
-                await dm_channel.send(embed=embed)
-        elif arg == "configs":
-            configs = Config.select()
-            for config in configs:
-                config_data = DBViewer(return_string=True).config(config)
-                embed = discord.Embed(title=f"hack the planet - {settings.GUILD}", description="")
-                for key, cdata in config_data.items():
-                    embed.add_field(name=key, value=f"```{cdata}```", inline=False)
-                await dm_channel.send(embed=embed)
-        elif "member" in arg:
-            member = Member.select().where(Member.discord_id == int(re.sub(r'\D', '', arg))).first()
-            member_data = DBViewer(return_string=True).member(member)
-            embed = discord.Embed(title=f"hack the planet - {settings.GUILD}", description="")
-            for key, mdata in member_data.items():
-                embed.add_field(name=key, value=f"```{mdata}```", inline=False)
-            await dm_channel.send(embed=embed)
-        elif "config" in arg:
-            config = Config.select().where(Config.name == arg.split(" ")[-1]).first()
-            config_data = DBViewer(return_string=True).config(config)
-            embed = discord.Embed(title=f"hack the planet - {settings.GUILD}", description="")
-            for key, cdata in config_data.items():
-                embed.add_field(name=key, value=f"```{cdata}```", inline=False)
-            await dm_channel.send(embed=embed)
 
 
 @app.get("/modules")

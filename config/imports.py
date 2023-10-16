@@ -9,6 +9,7 @@ import asyncio
 import inflection
 import calendar
 import time
+import textwrap
 
 from discord.ext import commands
 from discord import app_commands
@@ -29,3 +30,5 @@ from src.models.arcdps import ArcDPS
 from src.models.feed import Feed
 from playhouse.sqlite_ext import *
 from playhouse.migrate import *
+
+from src.cmds.debug_cog import DebugCog

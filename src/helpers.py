@@ -18,8 +18,9 @@ def find_base_class_by_espec(target_value):
 
 def command_to_cog(command):
     cmd2cog = re.sub(r'-', '_', command)
+    cmd2cog = re.sub(r'_cog', '', cmd2cog)
     cmd2cog = re.sub(r'_', '', (cmd2cog + "_cog").title())
-    print(cmd2cog)
+    return cmd2cog
 
 
 def get_by_name(nameable_objects, name):
