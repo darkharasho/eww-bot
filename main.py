@@ -158,6 +158,16 @@ async def modules():
     return settings.MODULES
 
 
+@app.post("/reload_tasks/{command}")
+async def reload_tasks_named(command):
+    print("[Info]         ♾️ Task Reload Triggered")
+    cmd = re.sub(r'-', '_', command)
+    await bot.reload_extension("src.tasks." + cmd + "_task")
+    print("[ENABLED]      🟢 cogs." + command)
+    print("[FINISH]       ♾️ Task Reloaded")
+    return True
+
+
 @app.post("/reload_commands")
 async def reload_commands():
     print("[Info]         ♾️ Command Reload Triggered")
@@ -167,11 +177,10 @@ async def reload_commands():
             tree.remove_command(module, guild=discord.Object(id=settings.GUILD_ID))
             print("[DISABLED]     🟡 cogs." + module)
         else:
-            if module == "apply":
-                cog = bot.get_cog('ApplyCog')
-                cmd = cog.get_app_commands()[0]
-                tree.add_command(cmd, guild=discord.Object(id=settings.GUILD_ID))
-                print("[ENABLED]      🟢 cogs." + module)
+            cog = bot.get_cog(helpers.command_to_cog(module))
+            cmd = cog.get_app_commands()[0]
+            tree.add_command(cmd, guild=discord.Object(id=settings.GUILD_ID))
+            print("[ENABLED]      🟢 cogs." + module)
     await tree.sync(guild=discord.Object(id=settings.GUILD_ID))
     print("[FINISH]       ♾️ All Commands Loaded")
 

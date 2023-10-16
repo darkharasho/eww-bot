@@ -18,7 +18,7 @@ else:
     time = datetime.time()
 
 
-class AutoAttendanceCog(commands.Cog):
+class AutoAttendanceTask(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.auto_attendance.start()
@@ -49,4 +49,4 @@ class AutoAttendanceCog(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(AutoAttendanceCog(bot), guild=bot.get_guild(settings.GUILD_ID), override=True)
+    await bot.add_cog(AutoAttendanceTask(bot), guild=bot.get_guild(settings.GUILD_ID), override=True)

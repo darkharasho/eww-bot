@@ -16,6 +16,12 @@ def find_base_class_by_espec(target_value):
     return None  # Return None if the target_value is not found in any list
 
 
+def command_to_cog(command):
+    cmd2cog = re.sub(r'-', '_', command)
+    cmd2cog = re.sub(r'_', '', (cmd2cog + "_cog").title())
+    print(cmd2cog)
+
+
 def get_by_name(nameable_objects, name):
     for nameable_object in nameable_objects:
         if nameable_object.name == name:
