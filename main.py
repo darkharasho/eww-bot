@@ -25,9 +25,9 @@ async def on_ready():
     await load_cogs(cog_type="cmds")
     await load_views()
     print("--------------------------------------------")
-    print(f'[CONNECTED]    🟢 {guild.name}(id: {guild.id})')
+    print(f"[CONNECTED]".ljust(20) + f"🟢 {guild.name}(id: {guild.id})")
     await tree.sync(guild=discord.Object(id=settings.GUILD_ID))
-    print("[FINISH]       ♾️ All Commands Loaded")
+    print("[FINISH]".ljust(20) + f"♾️ All Commands Loaded")
 
 
 async def load_db():
@@ -35,16 +35,17 @@ async def load_db():
     try:
         db.connect()
         db.create_tables([Config, Member, Attendance, ArcDPS, Feed])
-        print(textwrap.fill("[DATABASE]     🟢 DB Connected", width=80))
+        print("[DATABASE]".ljust(20) + f"🟢 DB Connected")
         migrations = DBMigrate().migrate()
         for migrate in migrations:
-            print(f"[MIGRATION]    {migrate[0]} {migrate[1]} - {migrate[2]}")
+            print(f"[MIGRATION]".ljust(20) + f"{migrate[0]} {migrate[1]} - {migrate[2]}")
+        print("[DATABASE]".ljust(20) + f"🟢 DB Ready")
     except Exception as e:
-        print("[DATABASE]     🔴 FAILED")
+        print("[DATABASE]".ljust(20) + f"🔴 FAILED")
         if os.getenv('LOG_LEVEL') == "debug":
             raise e
         else:
-            print(f"    [ERR] {e}")
+            print(" ".ljust(23) + f"[ERR] {e}")
             pass
 
 
@@ -61,15 +62,15 @@ async def load_cogs(cog_type=None):
                 await bot.load_extension(f"src.{cog_type}." + cog)
                 if cmd in Config.disabled_modules():
                     tree.remove_command(cmd, guild=discord.Object(id=settings.GUILD_ID))
-                    print(f"[DISABLED]     🟡 {cog_type}." + cog)
+                    print(f"[DISABLED]".ljust(20) + f"🟡 {cog_type}." + cog)
                 else:
-                    print(f"[COG LOADED]   🟢 {cog_type}." + cog)
+                    print(f"[{cog_type.upper()} LOADED]".ljust(20) + f"🟢 {cog_type}." + cog)
             except Exception as e:
-                print(f"[COG FAILED]   🔴 {cog_type}." + cog)
+                print(f"[{cog_type.upper()} FAILED]".ljust(20) + f"🔴 {cog_type}." + cog)
                 if os.getenv('LOG_LEVEL') == "debug":
                     raise e
                 else:
-                    print(f"    [ERR] {e}")
+                    print(" ".ljust(23) + f"[ERR] {e}")
 
 
 async def load_views():
@@ -78,13 +79,13 @@ async def load_views():
         view = f[:-3]
         if f.endswith(".py"):
             try:
-                print("[VIEW LOADED]  🟢 views." + view)
+                print("[VIEW LOADED]".ljust(20) + f"🟢 views." + view)
             except Exception as e:
-                print("[COG FAILED]   🔴 views." + view)
+                print("[VIEW FAILED]".ljust(20) + f"🔴 views." + view)
                 if os.getenv('LOG_LEVEL') == "debug":
                     raise e
                 else:
-                    print(f"    [ERR] {e}")
+                    print(" ".ljust(23) + f"[ERR] {e}")
 
 
 @app.get("/modules")
@@ -94,29 +95,29 @@ async def modules():
 
 @app.post("/reload_tasks/{command}")
 async def reload_tasks_named(command):
-    print("[Info]         ♾️ Task Reload Triggered")
+    print("[Info]".ljust(20) + f"♾️ Task Reload Triggered")
     cmd = re.sub(r'-', '_', command)
     await bot.reload_extension("src.tasks." + cmd + "_task")
-    print("[ENABLED]      🟢 cogs." + command)
-    print("[FINISH]       ♾️ Task Reloaded")
+    print("[ENABLED]".ljust(20) + f"🟢 cogs." + command)
+    print("[FINISH]".ljust(20) + f"♾️ Task Reloaded")
     return True
 
 
 @app.post("/reload_commands")
 async def reload_commands():
-    print("[Info]         ♾️ Command Reload Triggered")
+    print("[Info]".ljust(20) + f"♾️ Command Reload Triggered")
 
     for module in settings.MODULES:
         if module in Config.disabled_modules():
             tree.remove_command(module, guild=discord.Object(id=settings.GUILD_ID))
-            print("[DISABLED]     🟡 cogs." + module)
+            print("[DISABLED]".ljust(20) + f"🟡 cogs." + module)
         else:
             cog = bot.get_cog(helpers.command_to_cog(module))
             cmd = cog.get_app_commands()[0]
             tree.add_command(cmd, guild=discord.Object(id=settings.GUILD_ID))
-            print("[ENABLED]      🟢 cogs." + module)
+            print("[ENABLED]".ljust(20) + f"🟢 cogs." + module)
     await tree.sync(guild=discord.Object(id=settings.GUILD_ID))
-    print("[FINISH]       ♾️ All Commands Loaded")
+    print("[FINISH]".ljust(20) + f"♾️ All Commands Loaded")
 
     return True
 

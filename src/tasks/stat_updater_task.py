@@ -25,7 +25,7 @@ class StatUpdaterTask(commands.Cog):
         await self.bulk_update()
 
     async def bulk_update(self):
-        print("[GW2 SYNC]     🟢 STARTED")
+        print("[GW2 SYNC]".ljust(20) + f"🟢 STARTED")
         members = Member.select().where(Member.gw2_api_key.is_null(False))
 
         # for i in tqdm(range(len(members)), desc="[GW2 SYNC]     "):
@@ -39,12 +39,12 @@ class StatUpdaterTask(commands.Cog):
                 await self.update_deaths_count(member)
                 await self.update_supply_spent(member)
                 await self.update_yaks_escorted(member)
-                print(f"[GW2 SYNC]     🟢 ({index}/{len(members)}) {member.username}: {datetime.datetime.now() - start_time}")
+                print(f"[GW2 SYNC]".ljust(20) + f"🟢 ({index}/{len(members)}) {member.username}: {datetime.datetime.now() - start_time}")
             except Exception as e:
-                print(f"[GW2 SYNC]     🔴 ({index}/{len(members)}) {member.username}: {datetime.datetime.now() - start_time}")
-                print(f"                  {e}")
+                print(f"[GW2 SYNC]".ljust(20) + f"🔴 ({index}/{len(members)}) {member.username}: {datetime.datetime.now() - start_time}")
+                print(" ".ljust(23) + f"[ERR] {e}")
 
-        print("[GW2 SYNC]     🟢 DONE")
+        print("[GW2 SYNC]".ljust(20) + f"🟢 DONE")
 
     async def update_kill_count(self, member):
         member = Member.get(Member.id == member.id)
