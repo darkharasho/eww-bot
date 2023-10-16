@@ -161,7 +161,6 @@ async def modules():
 @app.post("/reload_commands")
 async def reload_commands():
     print("[Info]         ♾️ Command Reload Triggered")
-    # await load_cogs()
 
     for module in settings.MODULES:
         if module in Config.disabled_modules():
