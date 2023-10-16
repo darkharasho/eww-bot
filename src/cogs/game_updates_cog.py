@@ -8,6 +8,8 @@ from src import helpers
 from src.bot_client import bot
 from bs4 import BeautifulSoup
 
+tree = bot.tree
+
 
 class GameUpdatesCog(commands.Cog):
     def __init__(self, bot):
@@ -94,4 +96,4 @@ class GameUpdatesCog(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(GameUpdatesCog(bot), guild=settings.GUILD_ID, override=True)
+    await bot.add_cog(GameUpdatesCog(bot), guild=bot.get_guild(settings.GUILD_ID), override=True)

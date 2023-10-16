@@ -5,6 +5,8 @@ from src.gw2_api_client import GW2ApiClient
 from src.bot_client import bot
 from src.tasks.stat_updater_task import StatUpdaterTask
 
+tree = bot.tree
+
 
 class SetKeyCog(commands.Cog):
     def __init__(self, option):
@@ -12,8 +14,12 @@ class SetKeyCog(commands.Cog):
         self.db = SqliteDatabase('eww_bot.db')
         self.guild = bot.get_guild(settings.GUILD_ID)
 
-    @commands.command(pass_context=True)
-    async def set_key(self, interaction, gw2_api_key):
+    @tree.command(
+        name="set-key",
+        description="Set your API Key. Requires: account, characters, progression, inventories, and builds",
+        guild=discord.Object(id=settings.GUILD_ID)
+    )
+    async def set_key(self, interaction, gw2_api_key: str):
         await interaction.response.defer(ephemeral=True)
         db_member = Member.find_or_create(interaction.user)
         api_client = GW2ApiClient(api_key=gw2_api_key)
@@ -90,7 +96,11 @@ class SetKeyCog(commands.Cog):
             embed.add_field(name="GW2 API Key", value=f"```{gw2_api_key}```", inline=False)
             await interaction.followup.send(embed=embed, ephemeral=True)
 
-    @commands.command(pass_context=True)
+    @tree.command(
+        name="clear-key",
+        description="Clear your API Key",
+        guild=discord.Object(id=settings.GUILD_ID)
+    )
     async def clear_key(self, interaction):
         db_member = Member.find_or_create(interaction.user)
         with self.db.atomic():
@@ -105,4 +115,4 @@ class SetKeyCog(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(SetKeyCog(bot), guild=settings.GUILD_ID, override=True)
+    await bot.add_cog(SetKeyCog(bot), guild=bot.get_guild(settings.GUILD_ID), override=True)

@@ -8,6 +8,7 @@ from src.gw2_api_client import GW2ApiClient
 from src.bot_client import bot
 
 tabulate.PRESERVE_WHITESPACE = True
+tree = bot.tree
 
 
 async def calculate_leaderboard(name, data):
@@ -37,7 +38,11 @@ class FunderboardCog(commands.Cog):
         self.db = SqliteDatabase('eww_bot.db')
         self.guild = bot.get_guild(settings.GUILD_ID)
 
-    @commands.command(pass_context=True)
+    @tree.command(
+        name="funderboard",
+        description="Fun Leaderboard Stats",
+        guild=discord.Object(id=settings.GUILD_ID)
+    )
     async def funderboard(self, interaction):
         await interaction.response.defer()
         spike_table =  await calculate_leaderboard("Spikes", "legendary_spikes")
@@ -55,4 +60,4 @@ class FunderboardCog(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(FunderboardCog(bot), guild=settings.GUILD_ID, override=True)
+    await bot.add_cog(FunderboardCog(bot), guild=bot.get_guild(settings.GUILD_ID), override=True)

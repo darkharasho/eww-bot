@@ -7,6 +7,7 @@ from src import helpers
 from src.gw2_api_client import GW2ApiClient
 from src.bot_client import bot
 tabulate.PRESERVE_WHITESPACE = True
+tree = bot.tree
 
 
 async def calculate_leaderboard(name, data):
@@ -35,7 +36,11 @@ class LeaderboardCog(commands.Cog):
         self.db = SqliteDatabase('eww_bot.db')
         self.guild = bot.get_guild(settings.GUILD_ID)
 
-    @commands.command(pass_context=True)
+    @tree.command(
+        name="leaderboard",
+        description="Leaderboards for GW2 stats",
+        guild=discord.Object(id=settings.GUILD_ID)
+    )
     async def leaderboard(self, interaction):
         await interaction.response.defer()
         kill_table = await calculate_leaderboard("Kills", "weekly_kill_count")
@@ -53,4 +58,4 @@ class LeaderboardCog(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(LeaderboardCog(bot), guild=settings.GUILD_ID, override=True)
+    await bot.add_cog(LeaderboardCog(bot), guild=bot.get_guild(settings.GUILD_ID), override=True)

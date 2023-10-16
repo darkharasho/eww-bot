@@ -1,17 +1,24 @@
 from config.imports import *
 from discord.ui import Button
+from discord.ext import commands
 from src import settings
 from src import helpers
 from src import authorization
 from src.bot_client import bot
 from src.views import apply_view, apply_mod_view, reason_view
 
+tree = bot.tree
+
 
 class ApplyCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True)
+    @tree.command(
+        name="apply",
+        description="Apply to the guild",
+        guild=discord.Object(id=settings.GUILD_ID)
+    )
     async def apply(self, interaction):
         guild = discord.utils.get(bot.guilds, name=settings.GUILD)
         # Send an initial message to the user
@@ -67,4 +74,4 @@ class ApplyCog(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(ApplyCog(bot), guild=settings.GUILD_ID, override=True)
+    await bot.add_cog(ApplyCog(bot), guild=bot.get_guild(settings.GUILD_ID), override=True)

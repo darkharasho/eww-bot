@@ -4,15 +4,22 @@ from src.bot_client import bot
 from src import settings
 from src.cogs.stats_cog import StatsCog
 
+tree = bot.tree
+
 
 class CheckMemberCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True)
+    @tree.command(
+        name="check-member",
+        description="Leaderboards for GW2 stats",
+        guild=discord.Object(id=settings.GUILD_ID)
+    )
     async def check_member(self, interaction, member: discord.Member):
-        await StatsCog(self.bot).get_stats(interaction, member)
+        if await authorization.ensure_admin(interaction):
+            await StatsCog(self.bot).get_stats(interaction, member)
 
 
 async def setup(bot):
-    await bot.add_cog(CheckMemberCog(bot), guild=settings.GUILD_ID, override=True)
+    await bot.add_cog(CheckMemberCog(bot), guild=bot.get_guild(settings.GUILD_ID), override=True)

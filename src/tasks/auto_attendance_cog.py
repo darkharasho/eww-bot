@@ -6,6 +6,8 @@ from src import authorization
 from src.bot_client import bot
 from src.cogs.attendance_cog import attendance_core
 
+tree = bot.tree
+
 if Config.auto_attendance():
     time = datetime.time(
         hour=Config.auto_attendance(nested_cfg=["time", "hour"]),
@@ -47,4 +49,4 @@ class AutoAttendanceCog(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(AutoAttendanceCog(bot), guild=settings.GUILD_ID, override=True)
+    await bot.add_cog(AutoAttendanceCog(bot), guild=bot.get_guild(settings.GUILD_ID), override=True)

@@ -6,6 +6,8 @@ from src import settings
 from src.bot_client import bot
 from src.gw2_api_client import GW2ApiClient
 
+tree = bot.tree
+
 
 class StatUpdaterTask(commands.Cog):
     def __init__(self, bot, api_key=None):
@@ -107,4 +109,4 @@ class StatUpdaterTask(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(StatUpdaterTask(bot), guild=settings.GUILD_ID, override=True)
+    await bot.add_cog(StatUpdaterTask(bot), guild=bot.get_guild(settings.GUILD_ID), override=True)

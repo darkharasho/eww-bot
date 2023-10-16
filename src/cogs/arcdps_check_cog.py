@@ -8,6 +8,8 @@ from src import authorization
 from src.bot_client import bot
 from bs4 import BeautifulSoup
 
+tree = bot.tree
+
 
 class ArcDpsCheckCog(commands.Cog):
     def __init__(self, bot):
@@ -54,5 +56,5 @@ class ArcDpsCheckCog(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(ArcDpsCheckCog(bot), guild=settings.GUILD_ID, override=True)
+    await bot.add_cog(ArcDpsCheckCog(bot), guild=bot.get_guild(settings.GUILD_ID), override=True)
 

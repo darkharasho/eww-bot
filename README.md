@@ -13,6 +13,16 @@ Made with ❤️ by Engaging Without Warning [EWW]
 ```commandline
 poetry run uvicorn main:app --reload --port 8000 --host 0.0.0.0
 ```
+Start without uvicorn
+```commandline
+BOT_ONLY=true poetry run python main.py
+```
+
+Get into shell:
+```commandline
+poetry shell
+BOT_ONLY=true PYTHONSTARTUP=main.py python
+```
 
 ## Todo list
 

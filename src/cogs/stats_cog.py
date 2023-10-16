@@ -5,6 +5,8 @@ from src import helpers
 from src.gw2_api_client import GW2ApiClient
 from src.bot_client import bot
 
+tree = bot.tree
+
 
 class StatsCog(commands.Cog):
     def __init__(self, bot):
@@ -12,7 +14,11 @@ class StatsCog(commands.Cog):
         self.db = SqliteDatabase('eww_bot.db')
         self.guild = bot.get_guild(settings.GUILD_ID)
 
-    @commands.command(pass_context=True)
+    @tree.command(
+        name="stats",
+        description="See stats about yourself",
+        guild=discord.Object(id=settings.GUILD_ID)
+    )
     async def stats(self, interaction):
         await self.get_stats(interaction, interaction.user)
 
@@ -96,4 +102,4 @@ class StatsCog(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(StatsCog(bot), guild=settings.GUILD_ID, override=True)
+    await bot.add_cog(StatsCog(bot), guild=bot.get_guild(settings.GUILD_ID), override=True)

@@ -5,28 +5,35 @@ from src import helpers
 from src import authorization
 from src.bot_client import bot
 
+tree = bot.tree
+
 
 class AttendanceCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True)
+    @tree.command(
+        name="attendance",
+        description="Take raid attendance",
+        guild=discord.Object(id=settings.GUILD_ID)
+    )
     async def attendance(self, interaction, channel: discord.VoiceChannel):
-        await interaction.response.defer()
+        if await authorization.ensure_admin(interaction):
+            await interaction.response.defer()
 
-        # Escape if for any reason the channel wasnt found
-        if channel is None:
-            await interaction.response.send_message(
-                embed=discord.Embed(title="Error", description="Invalid channel selection.", color=0xff0000))
-            return
+            # Escape if for any reason the channel wasn't found
+            if channel is None:
+                await interaction.response.send_message(
+                    embed=discord.Embed(title="Error", description="Invalid channel selection.", color=0xff0000))
+                return
 
-        embeds = await attendance_core(channel)
+            embeds = await attendance_core(channel)
 
-        await interaction.followup.send(embeds=embeds)
+            await interaction.followup.send(embeds=embeds)
 
 
 async def setup(bot):
-    await bot.add_cog(AttendanceCog(bot), guild=settings.GUILD_ID, override=True)
+    await bot.add_cog(AttendanceCog(bot), guild=bot.get_guild(settings.GUILD_ID), override=True)
 
 
 def format_member_name(member: discord.Member):

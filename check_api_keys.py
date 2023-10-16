@@ -4,7 +4,6 @@ from src.bot_client import bot
 from src.models.member import Member
 from src.gw2_api_client import GW2ApiClient
 
-
 members = Member.select().where(Member.gw2_api_key.is_null(False))
 
 
@@ -46,5 +45,6 @@ def check_api_keys():
             print("✅ Inventories")
         except:
             print("❌ Inventories")
+
 
 check_api_keys()

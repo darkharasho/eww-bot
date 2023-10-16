@@ -5,59 +5,66 @@ from src import helpers
 from src import authorization
 from src.bot_client import bot
 
+tree = bot.tree
+
 
 class CheckAttendanceCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True)
+    @tree.command(
+        name="check-attendance",
+        description="Get specific attendance data on a user",
+        guild=discord.Object(id=settings.GUILD_ID)
+    )
     async def check_attendance(self, interaction, member: discord.Member):
-        if type(member) is not discord.Member:
-            await interaction.response.send_message(
-                embed=discord.Embed(title="Error", description="Not a valid user.", color=0xff0000))
-            return
+        if await authorization.ensure_admin(interaction):
+            if type(member) is not discord.Member:
+                await interaction.response.send_message(
+                    embed=discord.Embed(title="Error", description="Not a valid user.", color=0xff0000))
+                return
 
-        db_member = Member.find_or_create(member=member)
-        raid_dates = [attendance.date.strftime("%m/%d/%y") for attendance in
-                      db_member.attendances.where(Attendance.raid_type == "raid_day")]
-        off_dates = [attendance.date.strftime("%m/%d/%y") for attendance in
-                     db_member.attendances.where(Attendance.raid_type == "off_day")]
+            db_member = Member.find_or_create(member=member)
+            raid_dates = [attendance.date.strftime("%m/%d/%y") for attendance in
+                          db_member.attendances.where(Attendance.raid_type == "raid_day")]
+            off_dates = [attendance.date.strftime("%m/%d/%y") for attendance in
+                         db_member.attendances.where(Attendance.raid_type == "off_day")]
 
-        raid = db_member.raid_day_count()
-        off = db_member.off_day_count()
-        total = db_member.total_count()
+            raid = db_member.raid_day_count()
+            off = db_member.off_day_count()
+            total = db_member.total_count()
 
-        tablefmt = "heavy_outline"
+            tablefmt = "heavy_outline"
 
-        top_headers = ["Total Attendance", "Raid Days", "Off Dates"]
-        top_data = [[total, raid, off]]
-        top_table = tabulate(top_data, top_headers, tablefmt=tablefmt)
-        body = f"📊 **Totals**\n" + f"```elm\n{top_table}```\n"
+            top_headers = ["Total Attendance", "Raid Days", "Off Dates"]
+            top_data = [[total, raid, off]]
+            top_table = tabulate(top_data, top_headers, tablefmt=tablefmt)
+            body = f"📊 **Totals**\n" + f"```elm\n{top_table}```\n"
 
-        headers = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"]
-        raid_days_table = tabulate(format_dates_for_table(raid_dates), headers, tablefmt=tablefmt)
-        off_days_table = tabulate(format_dates_for_table(off_dates), headers, tablefmt=tablefmt)
-        body += f"⚔️ **Raid Dates**\n" + f"```elm\n{raid_days_table}```\n"
-        body += f"🌑 **Off Dates**\n" + f"```elm\n{off_days_table}```"
+            headers = ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"]
+            raid_days_table = tabulate(format_dates_for_table(raid_dates), headers, tablefmt=tablefmt)
+            off_days_table = tabulate(format_dates_for_table(off_dates), headers, tablefmt=tablefmt)
+            body += f"⚔️ **Raid Dates**\n" + f"```elm\n{raid_days_table}```\n"
+            body += f"🌑 **Off Dates**\n" + f"```elm\n{off_days_table}```"
 
-        embed = discord.Embed(
-            title="",
-            description=body,
-            color=member.top_role.color
-        )
+            embed = discord.Embed(
+                title="",
+                description=body,
+                color=member.top_role.color
+            )
 
-        if member.top_role.display_icon:
-            embed.set_footer(text=member.top_role.name, icon_url=member.top_role.display_icon.url)
-        else:
-            embed.set_author(name=member.name)
-        if member.display_avatar:
-            embed.set_author(name=f"{member.display_name} ({member.name})", icon_url=member.display_avatar.url)
+            if member.top_role.display_icon:
+                embed.set_footer(text=member.top_role.name, icon_url=member.top_role.display_icon.url)
+            else:
+                embed.set_author(name=member.name)
+            if member.display_avatar:
+                embed.set_author(name=f"{member.display_name} ({member.name})", icon_url=member.display_avatar.url)
 
-        await interaction.response.send_message(embed=embed)
+            await interaction.response.send_message(embed=embed)
 
 
 async def setup(bot):
-    await bot.add_cog(CheckAttendanceCog(bot), guild=settings.GUILD_ID, override=True)
+    await bot.add_cog(CheckAttendanceCog(bot), guild=bot.get_guild(settings.GUILD_ID), override=True)
 
 
 def print_dates(date_list):

@@ -5,6 +5,8 @@ from src import helpers
 from src import authorization
 from src.bot_client import bot
 from src.views import class_select_view
+tree = bot.tree
+
 if Config.raid_reminder():
     time = datetime.time(
         hour=Config.raid_reminder(nested_cfg=["time", "hour"]),
@@ -52,4 +54,4 @@ class RaidReminderTask(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(RaidReminderTask(bot), guild=settings.GUILD_ID, override=True)
+    await bot.add_cog(RaidReminderTask(bot), guild=bot.get_guild(settings.GUILD_ID), override=True)
