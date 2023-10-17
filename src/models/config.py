@@ -101,8 +101,8 @@ class Config(BaseModel):
                         # Handle the case where a key is not found
                         print(f"Key '{key}' not found.")
                         break
-                if current_dict == "True" or current_dict == "False":
-                    return eval(current_dict)
+                if current_dict in ["True", "true", "False", "false"]:
+                    return eval(current_dict.title())
                 return current_dict
             else:
                 return value.get_value()
@@ -126,8 +126,8 @@ class Config(BaseModel):
                         # Handle the case where a key is not found
                         print(f"Key '{key}' not found.")
                         break
-                    if current_dict == "True" or current_dict == "False":
-                        return eval(current_dict)
+                    if current_dict in ["True", "true", "False", "false"]:
+                        return eval(current_dict.title())
                 return current_dict
             else:
                 return value.get_value()
@@ -151,8 +151,8 @@ class Config(BaseModel):
                         # Handle the case where a key is not found
                         print(f"Key '{key}' not found.")
                         break
-                if current_dict == "True" or current_dict == "False":
-                    return eval(current_dict)
+                if current_dict in ["True", "true", "False", "false"]:
+                    return eval(current_dict.title())
                 else:
                     return current_dict
             else:
@@ -177,8 +177,8 @@ class Config(BaseModel):
                         # Handle the case where a key is not found
                         print(f"Key '{key}' not found.")
                         break
-                if current_dict == "True" or current_dict == "False":
-                    return eval(current_dict)
+                if current_dict in ["True", "true", "False", "false"]:
+                    return eval(current_dict.title())
                 else:
                     return current_dict
             else:
@@ -203,8 +203,8 @@ class Config(BaseModel):
                         # Handle the case where a key is not found
                         print(f"Key '{key}' not found.")
                         break
-                if current_dict == "True" or current_dict == "False":
-                    return eval(current_dict)
+                if current_dict in ["True", "true", "False", "false"]:
+                    return eval(current_dict.title())
                 else:
                     return current_dict
             else:
