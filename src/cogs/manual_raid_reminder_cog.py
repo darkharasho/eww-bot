@@ -24,7 +24,7 @@ class ManualRaidReminderCog(commands.Cog):
         if await authorization.ensure_admin(interaction):
             await interaction.response.defer(ephemeral=True)
             cog = bot.get_cog('RaidReminderTask')
-            await cog.raid_reminder()
+            await cog.raid_reminder(override=True)
             await interaction.followup.send(
                 embed=discord.Embed(
                     title="Raid reminder manually posted",

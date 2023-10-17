@@ -28,9 +28,9 @@ class RaidReminderTask(commands.Cog):
 
     # @tasks.loop(seconds=60000)
     @tasks.loop(time=time)
-    async def raid_reminder(self):
+    async def raid_reminder(self, override=None):
         today = datetime.datetime.today().weekday()
-        if Config.raid_reminder() and today in Config.raid_days():
+        if (Config.raid_reminder() and today in Config.raid_days()) or override:
             channel = self.guild.get_channel(Config.raid_reminder(nested_cfg=["channel_id"]))
 
             ping_body = ""
