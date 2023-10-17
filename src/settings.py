@@ -19,6 +19,7 @@ RAID_REMINDER_CLASSES = config.get('RaidReminderClasses', None)
 MAX_LEADERBOARD_MEMBERS = config.get('MaxLeaderboardMembers', 10)
 # (0 is Monday, 6 is Sunday)
 APPLICATIONS = config.get('Applications', {})
+OPEN_AI_KEY = config.get('OpenAIKey', {})
 
 MODULES = [
     "apply",

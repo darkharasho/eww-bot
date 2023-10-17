@@ -10,6 +10,7 @@ from src import helpers
 from src.bot_client import bot
 from src.db_migrate import DBMigrate
 from fastapi import FastAPI, HTTPException
+from src.open_ai import conversation_client
 
 global guild
 tree = bot.tree
@@ -86,6 +87,16 @@ async def load_views():
                     raise e
                 else:
                     print(" ".ljust(23) + f"[ERR] {e}")
+
+
+@bot.event
+async def on_message(message):
+    if bot.user.mentioned_in(message):
+        if settings.OPEN_AI_KEY:
+            reply = conversation_client.converse(message.clean_content)
+            await message.channel.send(reply)
+        else:
+            await message.channel.send("I'm sorry Dave, I can't let you do that.")
 
 
 @app.get("/modules")
