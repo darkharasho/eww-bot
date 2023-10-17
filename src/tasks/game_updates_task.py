@@ -74,10 +74,14 @@ class GameUpdatesTask(commands.Cog):
                     if entry.link.split("=")[-1] != filtered_tags[0]:
                         return
 
+                summary = re.sub(r'\n+', '\n', entry.summary)
+                if len(summary) > 4096:
+                    summary = summary.split("\n")[0]
+
                 embed = discord.Embed(
                     title=entry.title,
                     url=entry.link,
-                    description=re.sub(r'\n+', '\n', entry.summary[:4096]),
+                    description=re.sub(r'\n+', '\n', summary),
                     color=0xd6a24a)
                 embed.set_author(name=feed_name, icon_url=self.guild.icon.url)
                 # Convert the timestamp to a datetime object
