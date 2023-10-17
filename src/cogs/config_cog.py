@@ -21,6 +21,7 @@ class ConfigCog(commands.Cog):
         guild=discord.Object(id=settings.GUILD_ID)
     )
     @app_commands.choices(option=[
+        app_commands.Choice(name='Web Config', value='web_config'),
         app_commands.Choice(name='Set Configuration', value='set_config'),
         app_commands.Choice(name='Update members', value='member_update'),
         app_commands.Choice(name='Show Configuration', value="show")
@@ -28,76 +29,87 @@ class ConfigCog(commands.Cog):
     async def config(self, interaction, option: str):
         if await authorization.ensure_admin(interaction):
             dm_channel = await interaction.user.create_dm()
-            await interaction.response.send_message(
-                embed=discord.Embed(title="⚠️ Set Config", description="I've sent you a DM!", color=0xffcc4d),
-                ephemeral=True
-            )
+            if option == 'web_config':
+                embed = discord.Embed(
+                    title="Eww Bot Config",
+                    description="Web interface for managing your Eww Bot config",
+                    url="https://eww-bot.com"
+                )
+                file_name = helpers.select_icon("eww-bot-embed")
+                file = discord.File(file_name)
+                embed.set_image(url=f"attachment://{file.filename}")
+                await interaction.response.send_message(embed=embed, file=file, ephemeral=True)
+            else:
+                await interaction.response.send_message(
+                    embed=discord.Embed(title="⚠️ Set Config", description="I've sent you a DM!", color=0xffcc4d),
+                    ephemeral=True
+                )
 
-            try:
-                self.db.connect()
-            except:
-                pass
-            if option == "set_config":
-                await self.set_config(interaction)
-            elif option == "member_update":
-                embed = await self.members_update()
-                await dm_channel.send(embed=embed)
-            elif option == 'show':
-                embed = self.show()
-                await dm_channel.send(embed=embed)
+                try:
+                    self.db.connect()
+                except:
+                    pass
+                if option == "set_config":
+                    await self.set_config(interaction)
+                elif option == "member_update":
+                    embed = await self.members_update()
+                    await dm_channel.send(embed=embed)
+                elif option == 'show':
+                    embed = self.show()
+                    await dm_channel.send(embed=embed)
 
-        @staticmethod
-        async def set_config(interaction):
-            channel = interaction.channel
-            dm_channel = await interaction.user.create_dm()
+    @staticmethod
+    async def set_config(interaction):
+        channel = interaction.channel
+        dm_channel = await interaction.user.create_dm()
 
-            embed = discord.Embed(
-                title="️⚠️ Set Config",
-                description="```Please choose the config below you would like to add/edit```",
-                color=0xffcc4d
-            )
-            embed.set_author(name=interaction.user.name, icon_url=interaction.user.avatar.url)
+        embed = discord.Embed(
+            title="️⚠️ Set Config",
+            description="```Please choose the config below you would like to add/edit```",
+            color=0xffcc4d
+        )
+        embed.set_author(name=interaction.user.name, icon_url=interaction.user.avatar.url)
 
-            msg = await dm_channel.send(embed=embed)
-            view = set_config_view.SetConfigView(embed, msg)
-            await msg.edit(embed=embed, view=view)
+        msg = await dm_channel.send(embed=embed)
+        view = set_config_view.SetConfigView(embed, msg)
+        await msg.edit(embed=embed, view=view)
 
-        async def members_update(self):
-            all_db_members = Member.select()
-            all_db_members_ids = [db_member.discord_id for db_member in all_db_members]
+    async def members_update(self):
+        all_db_members = Member.select()
+        all_db_members_ids = [db_member.discord_id for db_member in all_db_members]
 
-            all_guild_members = []
-            for member in self.guild.members:
-                if helpers.check_guild_role(member=member):
-                    all_guild_members.append(member)
-            all_guild_members_ids = [member.id for member in all_guild_members]
+        all_guild_members = []
+        for member in self.guild.members:
+            if helpers.check_guild_role(member=member):
+                all_guild_members.append(member)
+        all_guild_members_ids = [member.id for member in all_guild_members]
 
-            added = []
-            for member in all_guild_members:
-                if member.id in all_db_members_ids:
-                    continue
-                else:
-                    try:
-                        with self.db.atomic():
-                            added.append(Member.create(username=member.name, discord_id=member.id))
-                    except IntegrityError:
-                        pass
+        added = []
+        for member in all_guild_members:
+            if member.id in all_db_members_ids:
+                continue
+            else:
+                try:
+                    with self.db.atomic():
+                        added.append(Member.create(username=member.name, discord_id=member.id))
+                except IntegrityError:
+                    pass
 
-            removed = []
-            for member in all_db_members:
-                if member.discord_id in all_guild_members_ids:
-                    continue
-                else:
-                    removed.append(member.username)
-                    Member.delete().where(Member.discord_id == member.discord_id).execute()
-                    Attendance.delete().where(Attendance.member == member).execute()
+        removed = []
+        for member in all_db_members:
+            if member.discord_id in all_guild_members_ids:
+                continue
+            else:
+                removed.append(member.username)
+                Member.delete().where(Member.discord_id == member.discord_id).execute()
+                Attendance.delete().where(Attendance.member == member).execute()
 
-            added_member_str = await format_with_position(added)
-            removed_members_str = await format_with_position(removed, deleted=True)
-            body = f"### Added:\n{added_member_str}\n"
-            body += f"### Removed:\n{removed_members_str}\n"
+        added_member_str = await format_with_position(added)
+        removed_members_str = await format_with_position(removed, deleted=True)
+        body = f"### Added:\n{added_member_str}\n"
+        body += f"### Removed:\n{removed_members_str}\n"
 
-            return discord.Embed(title="Successfully Updated Members", description=body)
+        return discord.Embed(title="Successfully Updated Members", description=body)
 
     @staticmethod
     def show():
