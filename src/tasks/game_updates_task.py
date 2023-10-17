@@ -42,7 +42,8 @@ class GameUpdatesTask(commands.Cog):
         if db_feed:
             first_time = False
             post = feedparser.parse(feed_url, modified=db_feed.modified)
-            db_feed.update(modified=post['headers']['date'])
+            db_feed.modified = post['headers']['date']
+            db_feed.save()
         else:
             first_time = True
             post = feedparser.parse(feed_url)
