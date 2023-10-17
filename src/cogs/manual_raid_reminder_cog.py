@@ -17,10 +17,10 @@ class ManualRaidReminderCog(commands.Cog):
 
     @tree.command(
         name="manual-raid-reminder",
-        description="Leaderboards for GW2 stats",
+        description="Kick off the raid reminder... again",
         guild=discord.Object(id=settings.GUILD_ID)
     )
-    async def sync_leaderboard(self, interaction):
+    async def manual_raid_reminder(self, interaction):
         if await authorization.ensure_admin(interaction):
             await interaction.response.defer(ephemeral=True)
             cog = bot.get_cog('RaidReminderTask')
