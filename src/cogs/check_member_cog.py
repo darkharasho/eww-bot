@@ -2,7 +2,6 @@ from config.imports import *
 from discord.ext import commands
 from src.bot_client import bot
 from src import settings
-from src.cogs.stats_cog import StatsCog
 
 tree = bot.tree
 
@@ -18,6 +17,7 @@ class CheckMemberCog(commands.Cog):
     )
     async def check_member(self, interaction, member: discord.Member):
         if await authorization.ensure_admin(interaction):
+            from src.cogs.stats_cog import StatsCog
             await StatsCog(self.bot).get_stats(interaction, member)
 
 
