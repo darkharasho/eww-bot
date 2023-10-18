@@ -7,6 +7,7 @@ from src import settings
 from src import helpers
 from src.bot_client import bot
 from bs4 import BeautifulSoup
+from src.open_ai import ChatGPT
 
 tree = bot.tree
 
@@ -76,7 +77,10 @@ class GameUpdatesTask(commands.Cog):
 
                 summary = re.sub(r'\n+', '\n', entry.summary)
                 if len(summary) > 4096:
-                    summary = summary.split("\n")[0]
+                    if settings.OPEN_AI_KEY:
+                        summary = ChatGPT().summarize(summary)
+                    else:
+                        summary = summary.split("\n")[0]
 
                 embed = discord.Embed(
                     title=entry.title,

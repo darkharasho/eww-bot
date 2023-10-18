@@ -12,7 +12,7 @@ from src import settings
 class ChatGPT:
     def __init__(self):
         openai.api_key = settings.OPEN_AI_KEY
-        self.messages = {
+        self.prompts = {
             "conversational": [
                 {
                     "role": "system",
@@ -27,18 +27,35 @@ class ChatGPT:
                     """
                 }
             ],
-            "summarize": []
+            "summarize": [
+                {
+                    "role": "system",
+                    "content": "These messages are from a game called Guild Wars 2. Please summarize the content and "
+                               "hit on the most important changes. Answers should be no longer than two paragraphs"
+                }
+            ]
         }
 
     def converse(self, message):
-        self.messages["conversational"].append(
+        self.prompts["conversational"].append(
             {"role": "user", "content": message},
         )
         chat = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo", messages=self.messages["conversational"]
+            model="gpt-3.5-turbo", messages=self.prompts["conversational"]
         )
         reply = chat.choices[0].message.content
-        self.messages["conversational"].append({"role": "assistant", "content": reply})
+        self.prompts["conversational"].append({"role": "assistant", "content": reply})
+        return reply
+
+    def summarize(self, content):
+        self.prompts["summarize"].append(
+            {"role": "user", "content": content},
+        )
+        chat = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo", messages=self.prompts["summarize"]
+        )
+        reply = chat.choices[0].message.content
+        self.prompts["conversational"].append({"role": "assistant", "content": reply})
         return reply
 
 
