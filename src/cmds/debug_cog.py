@@ -11,25 +11,29 @@ class DebugCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True)
+    @staticmethod
+    def check_creator(ctx):
+        return ctx.message.author.id == 201537071804973056
+
+    @commands.command()
+    @commands.check(check_creator)
     async def debug(self, ctx, *, arg):
-        if authorization.ensure_creator(ctx):
-            dm_channel = await ctx.author.create_dm()
-            await ctx.message.delete()
-            if arg == "members":
-                members = Member.select()
-                for member in members:
-                    await member_hack(dm_channel, member)
-            elif arg == "configs":
-                configs = Config.select()
-                for config in configs:
-                    await config_hack(dm_channel, config)
-            elif "member" in arg:
-                member = Member.select().where(Member.discord_id == int(re.sub(r'\D', '', arg))).first()
+        dm_channel = await ctx.author.create_dm()
+        await ctx.message.delete()
+        if arg == "members":
+            members = Member.select()
+            for member in members:
                 await member_hack(dm_channel, member)
-            elif "config" in arg:
-                config = Config.select().where(Config.name == arg.split(" ")[-1]).first()
+        elif arg == "configs":
+            configs = Config.select()
+            for config in configs:
                 await config_hack(dm_channel, config)
+        elif "member" in arg:
+            member = Member.select().where(Member.discord_id == int(re.sub(r'\D', '', arg))).first()
+            await member_hack(dm_channel, member)
+        elif "config" in arg:
+            config = Config.select().where(Config.name == arg.split(" ")[-1]).first()
+            await config_hack(dm_channel, config)
 
 
 async def setup(bot):

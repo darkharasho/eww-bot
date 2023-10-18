@@ -93,10 +93,10 @@ async def load_views():
 async def on_message(message):
     if bot.user.mentioned_in(message):
         if settings.OPEN_AI_KEY:
-            reply = conversation_client.converse(message.clean_content)
-            await message.channel.send(reply)
+            await conversation_client.chunked_converse(message)
         else:
             await message.channel.send("I'm sorry Dave, I can't let you do that.")
+    await bot.process_commands(message)
 
 
 @app.get("/modules")
