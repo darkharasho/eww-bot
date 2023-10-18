@@ -2,6 +2,7 @@ from config.imports import *
 from discord.ext import commands
 from src.bot_client import bot
 from src import settings
+from src import authorization
 
 tree = bot.tree
 
@@ -12,7 +13,7 @@ class CheckMemberCog(commands.Cog):
 
     @tree.command(
         name="check-member",
-        description="Leaderboards for GW2 stats",
+        description="Check specific member stats",
         guild=discord.Object(id=settings.GUILD_ID)
     )
     async def check_member(self, interaction, member: discord.Member):
