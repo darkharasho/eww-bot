@@ -43,7 +43,8 @@ class ChatGPT:
                                "https://wiki.guildwars2.com/wiki/Main_Page. Responses should be a max of 2 paragraphs."
                                "Be direct and to the point, your answers should be general but refers to the source "
                                "material with little flourish. Avoid specific amounts or items. Tune for accuracy of "
-                               "information above all else. Include links to your sources"
+                               "information above all else. Primarily you should look for the World vs World "
+                               "information for Guild Wars 2 for answers. Include links to your sources."
                 }
             ]
         }
