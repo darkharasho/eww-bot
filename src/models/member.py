@@ -34,10 +34,16 @@ class Member(BaseModel):
         return [api_key.value for api_key in self.api_keys]
 
     def gw2_api_keys(self):
-        keys_dict = {}
+        key_list = []
         for api_key in self.api_keys:
-            keys_dict[api_key.name] = api_key.value
-        return keys_dict
+            key_list.append(
+                {
+                    "name": api_key.name,
+                    "value": api_key.value,
+                    "primary": api_key.primary
+                }
+            )
+        return key_list
 
     def total_count(self):
         return self.attendances.count()

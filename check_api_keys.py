@@ -4,7 +4,7 @@ from src.bot_client import bot
 from src.models.member import Member
 from src.gw2_api_client import GW2ApiClient
 
-members = [api_key.member for api_key in ApiKey.select()]
+members = list(set([api_key.member for api_key in ApiKey.select()]))
 
 
 def check_api_keys():
@@ -48,7 +48,7 @@ def check_api_keys():
 
 
 def migrate_api_keys():
-    members = [api_key.member for api_key in ApiKey.select()]
+    members = list(set([api_key.member for api_key in ApiKey.select()]))
     for member in members:
         ApiKey.find_or_create(member=member, value=member.gw2_api_key)
 
