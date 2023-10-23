@@ -26,8 +26,11 @@ class RaidNotificationCog(commands.Cog):
         app_commands.Choice(name='⚔️ 🟢 Green Alpine Borderlands', value='Green Alpine Borderlands'),
         app_commands.Choice(name='⚔️ 🔵 Blue Alpine Borderlands', value='Blue Alpine Borderlands'),
         app_commands.Choice(name='⚔️ 🔴 Red Desert Borderlands', value='Red Desert Borderlands')
+    ], raid_type=[
+        app_commands.Choice(name="🔒 Closed Tag", value="closed_raid"),
+        app_commands.Choice(name="🔓 Open Tag", value="open_raid"),
     ])
-    async def raid_notification(self, interaction, channel: discord.TextChannel, wvw_map: str, open_tag: bool):
+    async def raid_notification(self, interaction, wvw_map: str, raid_type: str):
         if await authorization.ensure_commander(interaction):
             await interaction.response.defer(ephemeral=True)
 
@@ -39,7 +42,7 @@ class RaidNotificationCog(commands.Cog):
             for role_id in Config.raid_notification(nested_cfg=["role_ids"]):
                 role = interaction.guild.get_role(role_id)
                 ping_body += f"{role.mention} "
-            if open_tag:
+            if raid_type == "open_raid":
                 for role_id in Config.raid_notification(nested_cfg=["open_tag_role_ids"]):
                     role = interaction.guild.get_role(role_id)
                     ping_body += f"{role.mention} "
@@ -115,6 +118,8 @@ class RaidNotificationCog(commands.Cog):
 
             thumbnail_file = discord.File(thumbnail_file_name)
             raid_embed.set_thumbnail(url=f"attachment://{thumbnail_file.filename}")
+
+            channel = bot.get_channel(Config.raid_notification()[f"{raid_type}_channel_id"])
 
             try:
                 await channel.send(ping_body, embed=raid_embed, files=[thumbnail_file, banner_file])
