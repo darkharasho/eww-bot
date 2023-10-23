@@ -37,7 +37,7 @@ class RemoveKeyCog(commands.Cog):
                 key_name = f"{api_key.name} - Primary"
             else:
                 key_name = api_key.name
-            embed.add_field(name=key_name, value=f"```{api_key.value}```", inline=False)
+            embed.add_field(name=f"{key_name} {'🟢' if api_key.primary else ''}", value=f"```{api_key.value}```", inline=False)
         key_select_menu = discord.ui.Select(
             placeholder="Select API Key...",
             options=options

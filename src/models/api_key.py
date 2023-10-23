@@ -17,6 +17,9 @@ class ApiKey(BaseModel):
     def account_id(self):
         return GW2ApiClient(api_key=self.value).account()["id"]
 
+    def api_client(self):
+        return GW2ApiClient(api_key=self.value)
+
     @staticmethod
     def find_or_create(member=discord.Member, value=None, primary=None):
         api_key = ApiKey.select().where((ApiKey.member == member) & (ApiKey.value == value)).first()
