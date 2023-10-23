@@ -35,7 +35,7 @@ class KeysCog(commands.Cog):
             **Key**: 
             ```{api_key.value}```
             """
-            embed.add_field(name=f"{api_key.name} {'🟢' if api_key.primary else ''}", value=value, inline=False)
+            embed.add_field(name=f"{api_key.name} {'✦' if api_key.primary else ''}", value=value, inline=False)
 
         await interaction.followup.send(embed=embed)
 

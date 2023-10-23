@@ -105,12 +105,14 @@ class Member(BaseModel):
             return ""
 
     def legendary_spikes(self):
-        items = GW2ApiClient(api_key=self.api_key).bank()
-        legendary_spike_id = 81296
         count = 0
-        for item in items:
-            if item["id"] == legendary_spike_id:
-                count += item["count"]
+        legendary_spike_id = 81296
+        for api_key in self.api_keys:
+            items = api_key.api_client().bank()
+
+            for item in items:
+                if item["id"] == legendary_spike_id:
+                    count += item["count"]
         return count
 
     def gifts_of_battle(self):
