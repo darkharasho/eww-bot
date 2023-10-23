@@ -273,13 +273,21 @@ class SetConfigView(discord.ui.View):
                 pass
 
         elif selected_option == "RaidNotification":
-            role_options = self.role_select()
-            self.clear_items()
-            self.embed.description = "```Raid Notification:\nPlease select the primary ping roles below.```"
-            self.add_item(item=discord.ui.Select(placeholder="Select Ping Member Role...",
-                                                 options=role_options,
-                                                 min_values=1,
-                                                 max_values=len(role_options)))
+            answer_key = ["role_ids", "closed_raid_channel_id", "open_tag_role_ids", "open_raid_channel_id"]
+            answers = {}
+            for index, question in enumerate(settings.RAID_NOTIFICATION_CONFIG, start=0):
+                question_view = set_multi_config_view.SetMultiConfigView(config_name=selected_option,
+                                                                         question=question,
+                                                                         channel=interaction.channel,
+                                                                         user=interaction.user)
+                answer = await question_view.send_question(index)
+                answers[answer_key[index]] = answer
+                if answer == "APPLICATION_CANCEL":
+                    break
+
+            await self.handle_multi_question_response(name="auto_attendance", answers=answers,
+                                                      description="```Raid Notification:\nConfiguration for tagging "
+                                                                  "up notifications.```")
 
         elif selected_option == "ArcdpsUpdates":
             answer_key = ["enabled", "channel_id"]
@@ -370,29 +378,6 @@ class SetConfigView(discord.ui.View):
             elif selected_option == "BuildForumChannel":
                 await self.set_generic_channel_config(name="build_forum_channel_id",
                                                       value=int(event.data["values"][0]))
-            elif selected_option == "RaidNotification":
-                config = {
-                    "role_ids": [int(r) for r in event.data["values"]]
-                }
-                role_options = self.role_select()
-                self.clear_items()
-                self.embed.description = "```Raid Notification:\nPlease select the open tag ping roles below.```"
-                self.add_item(item=discord.ui.Select(placeholder="Select Open Tag Member Roles...",
-                                                     options=role_options,
-                                                     min_values=1,
-                                                     max_values=len(role_options)))
-                await self.msg.channel.send(embed=self.embed, view=self)
-                events = [
-                    bot.wait_for('interaction', check=lambda
-                        inter: inter.user == interaction.user and inter.channel == interaction.channel)
-                ]
-                done, pending = await asyncio.wait(events, return_when=asyncio.FIRST_COMPLETED)
-                event = done.pop().result()
-
-                if event:
-                    config["open_tag_role_ids"] = [int(r) for r in event.data["values"]]
-
-                await self.set_generic_config(name="raid_notification", value=config)
             elif selected_option == "DisableModule":
                 await self.set_generic_config(name="disabled_modules", value=event.data["values"])
                 for module in settings.MODULES:
