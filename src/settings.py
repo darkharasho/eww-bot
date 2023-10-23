@@ -77,9 +77,19 @@ RAID_NOTIFICATION_CONFIG = [
         "response_type": "roles"
     },
     {
+        "text": "# Closed Tag Notification Channel:",
+        "field_type": "input",
+        "response_type": "text_channel"
+    },
+    {
         "text": "# Open Tag Roles to ping",
         "field_type": "input",
         "response_type": "roles"
+    },
+    {
+        "text": "# Open Tag Notification Channel:",
+        "field_type": "input",
+        "response_type": "text_channel"
     }
 ]
 
