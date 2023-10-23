@@ -19,7 +19,7 @@ class SetKeyCog(commands.Cog):
         description="Set your API Key. Requires: account, characters, progression, inventories, and builds",
         guild=discord.Object(id=settings.GUILD_ID)
     )
-    async def set_key(self, interaction, gw2_api_key: str):
+    async def set_key(self, interaction, name: str, gw2_api_key: str, primary: bool):
         await interaction.response.defer(ephemeral=True)
         db_member = Member.find_or_create(interaction.user)
         api_client = GW2ApiClient(api_key=gw2_api_key)
@@ -70,7 +70,7 @@ class SetKeyCog(commands.Cog):
             api_checks_display.append("❌ Inventories")
 
         if all(api_checks):
-            Member.update(gw2_api_key=gw2_api_key).where(Member.id == db_member.id).execute()
+            ApiKey.create(member= db_member, name=name, value=gw2_api_key, primary=primary)
 
             suc = StatUpdaterTask(bot, api_key=gw2_api_key)
             await suc.update_kill_count(db_member)

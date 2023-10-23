@@ -26,13 +26,13 @@ class StatUpdaterTask(commands.Cog):
 
     async def bulk_update(self):
         print("[GW2 SYNC]".ljust(20) + f"🟢 STARTED")
-        members = Member.select().where(Member.gw2_api_key.is_null(False))
+        members = [api_key.member for api_key in ApiKey.select()]
 
         # for i in tqdm(range(len(members)), desc="[GW2 SYNC]     "):
         for index, member in enumerate(members, start=1):
             try:
                 start_time = datetime.datetime.now()
-                self.api_client = GW2ApiClient(api_key=member.gw2_api_key)
+                self.api_client = GW2ApiClient(api_key=member.api_key)
                 await self.update_kill_count(member)
                 await self.update_capture_count(member)
                 await self.update_rank_count(member)

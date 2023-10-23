@@ -5,7 +5,7 @@ from src import authorization
 from src.bot_client import bot
 
 
-class DBMigrate():
+class DBMigrate:
     def __init__(self):
         self.db = SqliteDatabase('eww_bot.db')
         self.guild = bot.get_guild(settings.GUILD_ID)

@@ -20,6 +20,7 @@ MAX_LEADERBOARD_MEMBERS = config.get('MaxLeaderboardMembers', 10)
 # (0 is Monday, 6 is Sunday)
 APPLICATIONS = config.get('Applications', {})
 OPEN_AI_KEY = config.get('OpenAIKey', {})
+OPEN_AI_MODEL = config.get('OpenAIModel', "gpt-3.5-turbo")
 
 MODULES = [
     "apply",

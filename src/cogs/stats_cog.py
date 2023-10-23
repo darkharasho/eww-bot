@@ -26,8 +26,8 @@ class StatsCog(commands.Cog):
         await interaction.response.defer(ephemeral=True)
         db_member = Member.find_or_create(member)
 
-        if db_member.gw2_api_key:
-            api_client = GW2ApiClient(api_key=db_member.gw2_api_key)
+        if db_member.api_key:
+            api_client = GW2ApiClient(api_key=db_member.api_key)
             gw2_account_info = api_client.account()
 
             embed = discord.Embed(

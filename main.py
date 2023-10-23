@@ -35,7 +35,7 @@ async def load_db():
     db = SqliteDatabase('eww_bot.db')
     try:
         db.connect()
-        db.create_tables([Config, Member, Attendance, ArcDPS, Feed])
+        db.create_tables([Config, Member, Attendance, ArcDPS, Feed, ApiKey])
         print("[DATABASE]".ljust(20) + f"🟢 DB Connected")
         migrations = DBMigrate().migrate()
         for migrate in migrations:
