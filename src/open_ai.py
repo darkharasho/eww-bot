@@ -113,7 +113,7 @@ class ChatGPT:
         if len(self.prompts["conversational"]) > 2:
             del self.prompts["conversational"][1]
         self.prompts["conversational"].append(
-            {"role": "user", "content": f"I am {member.display_name} - {message.clean_content}"},
+            {"role": "user", "content": f"From the warrior {member.display_name}: {message.clean_content}"},
         )
         async for chunk in await openai.ChatCompletion.acreate(
                 model="gpt-3.5-turbo",
