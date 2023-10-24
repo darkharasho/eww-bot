@@ -4,7 +4,7 @@ from src.bot_client import bot
 from src.models.member import Member
 from src.gw2_api_client import GW2ApiClient
 
-config = Config.auto_attendance()
+config = Config.select().where(Config.name == "auto_attendance").first()
 
 config.value = {
     "enabled": False,
@@ -14,3 +14,5 @@ config.value = {
         "minute": 0
     }
 }
+
+config.save()
