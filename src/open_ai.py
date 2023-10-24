@@ -109,10 +109,8 @@ class ChatGPT:
         full_text = ""
         count = 0
         msg = await message.channel.send(embed=discord.Embed(title="", description="Thinking..."))
-        # Only hold the last 10 conversations
-        if len(self.prompts["conversational"]) > 2:
-            del self.prompts["conversational"][1]
-        self.prompts["conversational"].append(
+        single_prompt = self.prompts["conversational"]
+        single_prompt.append(
             {"role": "user", "content": f"From the warrior {member.display_name}: {message.clean_content}"},
         )
         async for chunk in await openai.ChatCompletion.acreate(
