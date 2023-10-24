@@ -115,7 +115,7 @@ class ChatGPT:
         )
         async for chunk in await openai.ChatCompletion.acreate(
                 model="gpt-3.5-turbo",
-                messages=self.prompts["conversational"],
+                messages=single_prompt,
                 stream=True,
         ):
             content = chunk["choices"][0].get("delta", {}).get("content")
