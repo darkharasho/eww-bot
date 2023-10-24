@@ -110,7 +110,7 @@ class ChatGPT:
         count = 0
         msg = await message.channel.send(embed=discord.Embed(title="", description="Thinking..."))
         # Only hold the last 10 conversations
-        if len(self.prompts["conversational"]) > 10:
+        if len(self.prompts["conversational"]) > 2:
             del self.prompts["conversational"][1]
         self.prompts["conversational"].append(
             {"role": "user", "content": message.clean_content},
