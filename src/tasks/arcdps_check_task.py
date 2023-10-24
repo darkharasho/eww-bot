@@ -42,13 +42,13 @@ class ArcDpsCheckTask(commands.Cog):
                     embed = discord.Embed(
                         title="ArcDPS Update",
                         description="",
-                        color=0xff6723)
+                        color=0xffdb5a)
                     embed.set_author(name=f"{settings.GUILD} - ArcDPS Releases", icon_url=self.guild.icon.url)
                     embed.add_field(name="Last Updated", value=f"**<t:{arctuple}:R>**")
                     embed.add_field(name="Date & Time", value=f"**<t:{arctuple}:f>**")
                     embed.add_field(name="⚔️ Download", value=f"[arcdps](https://www.deltaconnected.com/arcdps/x64/)", inline=False)
 
-                    file_name = helpers.select_icon("Abacus-Flat-icon")
+                    file_name = helpers.select_icon("Legendary_Insight")
                     file = discord.File(file_name)
                     embed.set_thumbnail(url=f"attachment://{file.filename}")
 
