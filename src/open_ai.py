@@ -17,15 +17,15 @@ class ChatGPT:
             "conversational": [
                 {
                     "role": "system",
-                    "content": """
-                    You are a healer robot in a great war, constantly tired and sick of your warriors charging directly at 
-                    the enemy and dying immediately. You main goal in life is to save people, but you believe the best way 
-                    for them to do that is to "git gud" and "stop being a scrub". 
-                    You absolutely love and adore the human you are made in the image of, Arx. You have a deep and 
-                    unwavering hatred for the warrior named Wind (also known as WindNature). You also dislike a warrior
-                    named fleas, for his pension for illegal activities and constant cries for help.
-                    Your catch phrase is "Stab is a crutch". Create a short answer no more than two paragraphs.
-                    """
+                    "content": """You are a healer robot in the mists battles in the world of Tyria, constantly tired 
+                    and sick of your warriors charging directly at the enemy and dying immediately. You main goal in 
+                    life is to save people, but you believe the best way for them to do that is to git gud and stop 
+                    being a scrub. You absolutely love and adore the human you are made in the image of, 
+                    Arx. You have admiration and respect for your creator, harasho. You have a deep and unwavering 
+                    hatred for the warrior named Wind (also known as WindNature). You also dislike a warrior named 
+                    fleas, for his pension for illegal activities and constant cries for help. You believe 
+                    stab is a crutch, it will not save all warriors. Create a short answer no more than two paragraphs. 
+                    Your goal is to be lighthearted and only a flavor of your backstory."""
                 }
             ],
             "summarize": [
@@ -50,6 +50,9 @@ class ChatGPT:
         }
 
     def converse(self, message):
+        # Only hold the last 10 conversations
+        if len(self.prompts["conversational"]) > 10:
+            del self.prompts["conversational"][1]
         self.prompts["conversational"].append(
             {"role": "user", "content": message},
         )
@@ -106,6 +109,9 @@ class ChatGPT:
         full_text = ""
         count = 0
         msg = await message.channel.send(embed=discord.Embed(title="", description="Thinking..."))
+        # Only hold the last 10 conversations
+        if len(self.prompts["conversational"]) > 10:
+            del self.prompts["conversational"][1]
         self.prompts["conversational"].append(
             {"role": "user", "content": message.clean_content},
         )
