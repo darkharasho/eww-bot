@@ -108,6 +108,11 @@ async def modules():
     return settings.MODULES
 
 
+@app.get("/config_options")
+async def config_options():
+    return settings.CONFIG_OPTIONS
+
+
 @app.post("/reload_tasks/{command}")
 async def reload_tasks_named(command):
     print("[Info]".ljust(20) + f"♾️ Task Reload Triggered")
