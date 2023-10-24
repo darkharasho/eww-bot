@@ -105,7 +105,7 @@ class ChatGPT:
                     await msg.edit(content=full_text, embed=None)
         await msg.edit(content=full_text, embed=None)
 
-    async def chunked_converse(self, message):
+    async def chunked_converse(self, member: discord.Member, message: discord.Message):
         full_text = ""
         count = 0
         msg = await message.channel.send(embed=discord.Embed(title="", description="Thinking..."))
@@ -113,7 +113,7 @@ class ChatGPT:
         if len(self.prompts["conversational"]) > 2:
             del self.prompts["conversational"][1]
         self.prompts["conversational"].append(
-            {"role": "user", "content": message.clean_content},
+            {"role": "user", "content": f"I am {member.display_name} - {message.clean_content}"},
         )
         async for chunk in await openai.ChatCompletion.acreate(
                 model="gpt-3.5-turbo",

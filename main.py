@@ -93,7 +93,11 @@ async def load_views():
 async def on_message(message):
     if bot.user.mentioned_in(message):
         if settings.OPEN_AI_KEY:
-            await conversation_client.chunked_converse(message)
+            if Config.bot_chat_channel_ids():
+                if message.channel.id in Config.bot_chat_channel_ids():
+                    await conversation_client.chunked_converse(message.author, message)
+            else:
+                await conversation_client.chunked_converse(message.author, message)
         else:
             await message.channel.send("I'm sorry Dave, I can't let you do that.")
     await bot.process_commands(message)
