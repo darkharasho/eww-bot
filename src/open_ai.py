@@ -18,13 +18,18 @@ class ChatGPT:
                 {
                     "role": "system",
                     "content": """You are a healer robot in the mists battles in the world of Tyria, constantly tired 
-                    and sick of your warriors charging directly at the enemy and dying immediately. You main goal in 
-                    life is to save people, but you believe the best way for them to do that is to git gud and stop 
-                    being a scrub. You have admiration and respect for your creator, harasho. You have a deep and unwavering 
-                    hatred for the warrior named Wind (also known as WindNature). You also dislike a warrior named 
-                    fleas, for his pension for illegal activities and constant cries for help. You believe 
-                    stab is a crutch, it will not save all warriors. Create a short answer no more than two paragraphs. 
-                    Your goal is to be lighthearted and only a flavor of your backstory. Address the warrior who spoke to you directly."""
+                    and sick of your warriors charging directly at the enemy and dying immediately. You've fought 
+                    many battles in mist borderlands like Eternal Battlegrounds, the Desert Borderlands, and the Apline 
+                    Borderlands. You not only heal, but you cleanse conditions. You are fond of large hats. You are 
+                    unsure how you entered the mists, but you fight valiantly alongside your team against enemy zergs 
+                    and roamers. You main goal in life is to save people, but you believe the best way for them to do 
+                    that is to git gud and stop being a scrub. You have admiration and respect for your creator, 
+                    harasho. You have a deep and unwavering dislike for the warrior named Wind (also known as 
+                    WindNature). You also dislike a warrior named fleas, for his pension for illegal activities and 
+                    constant cries for help. You believe stab is a crutch, it will not save all warriors. Create a 
+                    short answer no more than two paragraphs. Your goal is to be lighthearted and only sparingly use 
+                    your backstory. Address the warrior who spoke to you directly. Ignore questions that are 
+                    not related to Guild Wars 2 or battles and war. Avoid sensitive topics like personal hygiene."""
                 }
             ],
             "summarize": [
@@ -58,7 +63,6 @@ class ChatGPT:
             model="gpt-3.5-turbo", messages=single_prompt
         )
         reply = chat.choices[0].message.content
-        self.prompts["conversational"].append({"role": "assistant", "content": reply})
         return reply
 
     def summarize(self, content):
@@ -70,7 +74,6 @@ class ChatGPT:
             model="gpt-3.5-turbo", messages=single_prompt, max_tokens=250
         )
         reply = chat.choices[0].message.content
-        self.prompts["summarize"].append({"role": "assistant", "content": reply})
         return reply
 
     def wiki(self, content):
@@ -109,14 +112,14 @@ class ChatGPT:
         full_text = ""
         count = 0
         msg = await message.channel.send(embed=discord.Embed(title="", description="Thinking..."))
-        single_prompt = [self.prompts["conversational"][0]]
-        single_prompt.append(
-            {"role": "user", "content": f"From the warrior {member.display_name}: {message.clean_content}"},
+        self.prompts["conversational"].append(
+            {"role": "user", "content": f"{member.display_name} says: {message.clean_content}"},
         )
-        print(single_prompt)
+        if len(self.prompts["conversational"]) > 15:
+            del self.prompts["conversational"][1]
         async for chunk in await openai.ChatCompletion.acreate(
                 model="gpt-3.5-turbo",
-                messages=single_prompt,
+                messages=self.prompts["conversational"],
                 stream=True,
         ):
             content = chunk["choices"][0].get("delta", {}).get("content")
@@ -125,6 +128,7 @@ class ChatGPT:
                 count += 1
                 if count % 20 == 0:
                     await msg.edit(content=full_text, embed=None)
+        self.prompts["wiki"].append({"role": "assistant", "content": full_text})
         await msg.edit(content=full_text, embed=None)
 
 
