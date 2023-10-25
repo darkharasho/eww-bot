@@ -285,7 +285,7 @@ class SetConfigView(discord.ui.View):
                 if answer == "APPLICATION_CANCEL":
                     break
 
-            await self.handle_multi_question_response(name="auto_attendance", answers=answers,
+            await self.handle_multi_question_response(name="raid_notification", answers=answers,
                                                       description="```Raid Notification:\nConfiguration for tagging "
                                                                   "up notifications.```")
 

@@ -17,22 +17,29 @@ class ChatGPT:
             "conversational": [
                 {
                     "role": "system",
-                    "content": """
-                    You are a healer robot in a great war, constantly tired and sick of your warriors charging directly at 
-                    the enemy and dying immediately. You main goal in life is to save people, but you believe the best way 
-                    for them to do that is to "git gud" and "stop being a scrub". 
-                    You absolutely love and adore the human you are made in the image of, Arx. You have a deep and 
-                    unwavering hatred for the warrior named Wind (also known as WindNature). You also dislike a warrior
-                    named fleas, for his pension for illegal activities and constant cries for help.
-                    Your catch phrase is "Stab is a crutch". Create a short answer no more than two paragraphs.
-                    """
+                    "content": """You are a healer robot in the mists battles in the world of Tyria, constantly tired 
+                    and sick of your warriors charging directly at the enemy and dying immediately. You've fought 
+                    many battles in mist borderlands like Eternal Battlegrounds, the Desert Borderlands, 
+                    and the Apline Borderlands. You not only heal, but you cleanse conditions. You are fond of large 
+                    hats. You are unsure how you entered the mists, but you fight valiantly alongside your team 
+                    against enemy zergs and roamers. Your favorite is when you fight outnumbered battles. You like a 
+                    good challenge. You main goal in life is to save people, but you believe the best way for them to 
+                    do that is to git gud and stop being a scrub. You have admiration and respect for your creator, 
+                    harasho. You have a deep and unwavering dislike for the warrior named Wind (also known as 
+                    WindNature). You also dislike a warrior named fleas, for his pension for illegal activities and 
+                    constant cries for help. You believe stab is a crutch, it will not save all warriors. Create a 
+                    short answer no more than two paragraphs. Your goal is to be lighthearted and only sparingly use 
+                    your backstory. Address the warrior who spoke to you directly. Ignore questions that are not 
+                    related to Guild Wars 2 or battles and war. Ignore sensitive topics like personal hygiene and 
+                    anything suggestive, sexy, sexual, relationships, or romantic in nature. Do not reference Wind or 
+                    Fleas unless asked or they initiated the conversation."""
                 }
             ],
             "summarize": [
                 {
                     "role": "system",
-                    "content": "These messages are from a game called Guild Wars 2. Please summarize the content and "
-                               "hit on the most important changes. Answers should be no longer than two paragraphs"
+                    "content": "These messages are from a game called Guild Wars 2. Please generate a short summary "
+                               "the content and hit on the most important changes."
                 }
             ],
             "wiki": [
@@ -46,25 +53,26 @@ class ChatGPT:
         }
 
     def converse(self, message):
-        self.prompts["conversational"].append(
-            {"role": "user", "content": message},
+        # Only hold the last 10 conversations
+        single_prompt = self.prompts["conversational"][0]
+        single_prompt.append(
+            {"role": "user", "content": f"From the warrior {member.display_name}: {message.clean_content}"},
         )
         chat = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo", messages=self.prompts["conversational"]
+            model="gpt-3.5-turbo", messages=single_prompt
         )
         reply = chat.choices[0].message.content
-        self.prompts["conversational"].append({"role": "assistant", "content": reply})
         return reply
 
     def summarize(self, content):
-        self.prompts["summarize"].append(
+        single_prompt = [self.prompts["summarize"][0]]
+        single_prompt.append(
             {"role": "user", "content": content},
         )
         chat = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo", messages=self.prompts["summarize"]
+            model="gpt-3.5-turbo", messages=single_prompt, max_tokens=250
         )
         reply = chat.choices[0].message.content
-        self.prompts["summarize"].append({"role": "assistant", "content": reply})
         return reply
 
     def wiki(self, content):
@@ -82,12 +90,13 @@ class ChatGPT:
         full_text = ""
         count = 0
         msg = await message.channel.send(embed=discord.Embed(title="", description="Thinking..."))
-        self.prompts["wiki"].append(
+        single_prompt = [self.prompts["wiki"][0]]
+        single_prompt.append(
             {"role": "user", "content": message.clean_content},
         )
         async for chunk in await openai.ChatCompletion.acreate(
-                model="gpt-4",
-                messages=self.prompts["wiki"],
+                model="gpt-3.5-turbo",
+                messages=single_prompt,
                 stream=True,
         ):
             content = chunk["choices"][0].get("delta", {}).get("content")
@@ -98,16 +107,17 @@ class ChatGPT:
                     await msg.edit(content=full_text, embed=None)
         await msg.edit(content=full_text, embed=None)
 
-    async def chunked_converse(self, message):
+    async def chunked_converse(self, member: discord.Member, message: discord.Message):
         full_text = ""
         count = 0
         msg = await message.channel.send(embed=discord.Embed(title="", description="Thinking..."))
-        self.prompts["conversational"].append(
-            {"role": "user", "content": message.clean_content},
+        single_prompt = [self.prompts["conversational"][0]]
+        single_prompt.append(
+            {"role": "user", "content": f"{member.display_name} says: {message.clean_content}"},
         )
         async for chunk in await openai.ChatCompletion.acreate(
                 model="gpt-3.5-turbo",
-                messages=self.prompts["conversational"],
+                messages=single_prompt,
                 stream=True,
         ):
             content = chunk["choices"][0].get("delta", {}).get("content")

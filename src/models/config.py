@@ -3,6 +3,7 @@ import pdb
 from peewee import *
 from playhouse.sqlite_ext import *
 from src import settings
+from src.bot_client import bot
 from src.models.base_model import BaseModel
 
 
@@ -83,6 +84,14 @@ class Config(BaseModel):
             return value.get_value()
         else:
             raise "No Build Update Channel set."
+
+    @classmethod
+    def bot_chat_channel_ids(cls):
+        value = cls.select().where(cls.name == "bot_chat_channel_ids").first()
+        if value:
+            return value.get_value()
+        else:
+            return []
 
     @classmethod
     def auto_attendance(cls, nested_cfg=None):

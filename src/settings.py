@@ -43,6 +43,23 @@ MODULES = [
     "toggle-soundboard"
 ]
 
+CONFIG_OPTIONS = [
+    "guild_member_role_id",
+    "disabled_modules",
+    "allowed_admin_role_ids",
+    "build_manager_role_ids",
+    "game_updates",
+    "arcdps_updates",
+    "review_forum_channel_id",
+    "raid_reminder",
+    "raid_notification",
+    "auto_attendance",
+    "build_update_channel_id",
+    "build_forum_channel_id",
+    "raid_days",
+    "commander_role_ids"
+]
+
 SET_BUILD_UPDATE_CHANNEL =[
     {
         "text": "# Channel to post build updates:",

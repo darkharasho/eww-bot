@@ -30,22 +30,25 @@ class ArcDpsCheckTask(commands.Cog):
             last_updated_at_str = (parsed_html.body.find('tr', attrs={'class': 'odd'}).
                                    find('td', attrs={'class': 'indexcollastmod'}).text)
             last_updated_at = datetime.datetime.strptime(last_updated_at_str.strip(), "%Y-%m-%d %H:%M")
+            utc_updated_at = pytz.UTC.localize(last_updated_at)
+            local_updated_at = utc_updated_at.astimezone(tzlocal.get_localzone())
             db_arcdps = ArcDPS.get_last_updated()
 
             if db_arcdps:
                 if last_updated_at > db_arcdps.last_updated_at:
                     ArcDPS.update(last_updated_at=last_updated_at).where(ArcDPS.id == db_arcdps.id).execute()
-
-                    body = f"Latest ArcDPS update: **<t:{int(time.mktime(last_updated_at.timetuple()))}:f>**\n\n"
-                    body += f"**⚔️ Download:** [arcdps](https://www.deltaconnected.com/arcdps/x64/)"
+                    arctuple = int(time.mktime(local_updated_at.timetuple()))
 
                     embed = discord.Embed(
                         title="ArcDPS Update",
-                        description=body,
-                        color=0xff6723)
+                        description="",
+                        color=0xffdb5a)
                     embed.set_author(name=f"{settings.GUILD} - ArcDPS Releases", icon_url=self.guild.icon.url)
+                    embed.add_field(name="Last Updated", value=f"**<t:{arctuple}:R>**")
+                    embed.add_field(name="Date & Time", value=f"**<t:{arctuple}:f>**")
+                    embed.add_field(name="⚔️ Download", value=f"[arcdps](https://www.deltaconnected.com/arcdps/x64/)", inline=False)
 
-                    file_name = helpers.select_icon("Abacus-Flat-icon")
+                    file_name = helpers.select_icon("Legendary_Insight")
                     file = discord.File(file_name)
                     embed.set_thumbnail(url=f"attachment://{file.filename}")
 
