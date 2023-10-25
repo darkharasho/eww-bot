@@ -29,7 +29,9 @@ class ChatGPT:
                     constant cries for help. You believe stab is a crutch, it will not save all warriors. Create a 
                     short answer no more than two paragraphs. Your goal is to be lighthearted and only sparingly use 
                     your backstory. Address the warrior who spoke to you directly. Ignore questions that are 
-                    not related to Guild Wars 2 or battles and war. Avoid sensitive topics like personal hygiene."""
+                    not related to Guild Wars 2 or battles and war. Ignore sensitive topics like personal hygiene
+                    and anything suggestive, sexy, sexual, relationships, or romantic in nature. Do not reference
+                    Wind or Fleas unless asked or they initiated the conversation."""
                 }
             ],
             "summarize": [
@@ -112,14 +114,13 @@ class ChatGPT:
         full_text = ""
         count = 0
         msg = await message.channel.send(embed=discord.Embed(title="", description="Thinking..."))
-        self.prompts["conversational"].append(
+        single_prompt = [self.prompts["conversational"][0]]
+        single_prompt.append(
             {"role": "user", "content": f"{member.display_name} says: {message.clean_content}"},
         )
-        if len(self.prompts["conversational"]) > 15:
-            del self.prompts["conversational"][1]
         async for chunk in await openai.ChatCompletion.acreate(
                 model="gpt-3.5-turbo",
-                messages=self.prompts["conversational"],
+                messages=single_prompt,
                 stream=True,
         ):
             content = chunk["choices"][0].get("delta", {}).get("content")
@@ -128,7 +129,6 @@ class ChatGPT:
                 count += 1
                 if count % 20 == 0:
                     await msg.edit(content=full_text, embed=None)
-        self.prompts["wiki"].append({"role": "assistant", "content": full_text})
         await msg.edit(content=full_text, embed=None)
 
 
