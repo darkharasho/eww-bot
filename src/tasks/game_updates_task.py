@@ -62,7 +62,12 @@ class GameUpdatesTask(commands.Cog):
         if entries:
             updated_entries = []
             if first_time:
-                updated_entries = [entries[0]]
+                if db_feed_name == "studio_updates":
+                    for entry in entries:
+                        if "Studio Update:" in entry.title:
+                            updated_entries = [entry]
+                else:
+                    updated_entries = [entries[0]]
             else:
                 for entry in entries:
                     entry_published = datetime.datetime.strptime(entry.published.replace(" +0000", ""),
