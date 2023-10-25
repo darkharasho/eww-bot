@@ -62,11 +62,12 @@ class ChatGPT:
         return reply
 
     def summarize(self, content):
-        self.prompts["summarize"].append(
+        single_prompt = [self.prompts["summarize"][0]]
+        single_prompt.append(
             {"role": "user", "content": content},
         )
         chat = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo", messages=self.prompts["summarize"], max_tokens=250
+            model="gpt-3.5-turbo", messages=single_prompt, max_tokens=250
         )
         reply = chat.choices[0].message.content
         self.prompts["summarize"].append({"role": "assistant", "content": reply})
@@ -87,12 +88,13 @@ class ChatGPT:
         full_text = ""
         count = 0
         msg = await message.channel.send(embed=discord.Embed(title="", description="Thinking..."))
-        self.prompts["wiki"].append(
+        single_prompt = [self.prompts["wiki"][0]]
+        single_prompt.append(
             {"role": "user", "content": message.clean_content},
         )
         async for chunk in await openai.ChatCompletion.acreate(
                 model="gpt-3.5-turbo",
-                messages=self.prompts["wiki"],
+                messages=single_prompt,
                 stream=True,
         ):
             content = chunk["choices"][0].get("delta", {}).get("content")
