@@ -30,8 +30,8 @@ class ChatGPT:
             "summarize": [
                 {
                     "role": "system",
-                    "content": "These messages are from a game called Guild Wars 2. Please summarize the content and "
-                               "hit on the most important changes. Answers should be no longer than two paragraphs"
+                    "content": "These messages are from a game called Guild Wars 2. Please generate a short summary "
+                               "the content and hit on the most important changes."
                 }
             ],
             "wiki": [
@@ -66,7 +66,7 @@ class ChatGPT:
             {"role": "user", "content": content},
         )
         chat = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo", messages=self.prompts["summarize"]
+            model="gpt-3.5-turbo", messages=self.prompts["summarize"], max_tokens=250
         )
         reply = chat.choices[0].message.content
         self.prompts["summarize"].append({"role": "assistant", "content": reply})
