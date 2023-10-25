@@ -50,13 +50,12 @@ class ChatGPT:
 
     def converse(self, message):
         # Only hold the last 10 conversations
-        if len(self.prompts["conversational"]) > 10:
-            del self.prompts["conversational"][1]
-        self.prompts["conversational"].append(
-            {"role": "user", "content": message},
+        single_prompt = self.prompts["conversational"][0]
+        single_prompt.append(
+            {"role": "user", "content": f"From the warrior {member.display_name}: {message.clean_content}"},
         )
         chat = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo", messages=self.prompts["conversational"]
+            model="gpt-3.5-turbo", messages=single_prompt
         )
         reply = chat.choices[0].message.content
         self.prompts["conversational"].append({"role": "assistant", "content": reply})
@@ -108,10 +107,11 @@ class ChatGPT:
         full_text = ""
         count = 0
         msg = await message.channel.send(embed=discord.Embed(title="", description="Thinking..."))
-        single_prompt = self.prompts["conversational"]
+        single_prompt = [self.prompts["conversational"][0]]
         single_prompt.append(
             {"role": "user", "content": f"From the warrior {member.display_name}: {message.clean_content}"},
         )
+        print(single_prompt)
         async for chunk in await openai.ChatCompletion.acreate(
                 model="gpt-3.5-turbo",
                 messages=single_prompt,
