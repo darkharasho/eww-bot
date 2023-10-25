@@ -45,9 +45,13 @@ class ChatGPT:
             "wiki": [
                 {
                     "role": "system",
-                    "content": "Eww Bot is a factual chatbot knowledgeable about the Guild Wars 2 Wiki: "
-                               "https://wiki.guildwars2.com/wiki/Main_Page. EWW Bot provides its sources and "
-                               "summarizes Guild Wars 2 Wiki pages."
+                    "content": "You are a gaming assistant who helps users understand Guild Wars 2 better by "
+                               "leveraging your knowledge of the game and the Guild Wars 2 Wiki located at "
+                               "https://wiki.guildwars2.com/wiki/Main_Page. Responses should be a max of 2 paragraphs."
+                               "Be direct and to the point, your answers should be general but refers to the source "
+                               "material with little flourish. Avoid specific amounts or items. Tune for accuracy of "
+                               "information above all else. Primarily you should look for the World vs World "
+                               "information for Guild Wars 2 for answers. Include links to your sources."
                 }
             ]
         }
@@ -80,7 +84,7 @@ class ChatGPT:
             {"role": "user", "content": content},
         )
         chat = openai.ChatCompletion.create(
-            model=settings.OPEN_AI_MODEL, messages=self.prompts["wiki"]
+            model="gpt-3.5-turbo", messages=self.prompts["wiki"]
         )
         reply = chat.choices[0].message.content
         self.prompts["wiki"].append({"role": "assistant", "content": reply})
