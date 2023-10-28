@@ -47,6 +47,13 @@ def check_api_keys():
             print("❌ Inventories")
 
 
+def reset_weeklies():
+    members = Member.select()
+    for member in members:
+        member.gw2_stats = None
+        member.save()
+
+
 def migrate_api_keys():
     members = Member.select().where(Member.gw2_api_key.is_null(False))
     # members = list(set([api_key.member for api_key in ApiKey.select()]))
