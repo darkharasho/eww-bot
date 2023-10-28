@@ -8,4 +8,3 @@ class Attendance(BaseModel):
     member = ForeignKeyField(Member, backref="attendances")
     raid_type = CharField()
     date = DateTimeField()
-

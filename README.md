@@ -30,5 +30,5 @@ BOT_ONLY=true PYTHONSTARTUP=main.py python
 - [ ] add optional description to the google sheet and import-builds
 - [ ] Command to make a builds channel
 - [x] Add vod review tracking
-- [x] Register gw2 API key
-  - [x] Personal stats
+- [ ] Multiple API keys
+- [ ] Guild Rank Verification

@@ -26,8 +26,8 @@ class StatsCog(commands.Cog):
         await interaction.response.defer(ephemeral=True)
         db_member = Member.find_or_create(member)
 
-        if db_member.gw2_api_key:
-            api_client = GW2ApiClient(api_key=db_member.gw2_api_key)
+        if db_member.api_key:
+            api_client = GW2ApiClient(api_key=db_member.api_key)
             gw2_account_info = api_client.account()
 
             embed = discord.Embed(
@@ -53,7 +53,10 @@ class StatsCog(commands.Cog):
                         else:
                             unreviewed_count += 1
             embed.add_field(name="Current Role", value=member.top_role.mention, inline=True)
-            embed.add_field(name="GW2 Name", value=gw2_account_info["name"], inline=True)
+            embed.add_field(
+                name="GW2 Name",
+                value="\n".join([f"{api_key.name} {'✦' if api_key.primary else ''}" for api_key in db_member.api_keys])
+            )
             if "attendance" not in Config.disabled_modules():
                 embed.add_field(name="", value=f"", inline=False)
                 embed.add_field(
@@ -81,6 +84,7 @@ class StatsCog(commands.Cog):
                                     value=f"```-```",
                                     inline=True)
             embed.add_field(name="", value="```----- Guild Wars 2 Stats -----```", inline=False)
+            embed.add_field(name="Accounts", value=f"```" + str(len(db_member.api_keys)) + "```")
             embed.add_field(name="WvW Rank", value=f"```" + str(gw2_account_info["wvw_rank"]) + "```")
             embed.add_field(name="Legendary Spikes", value=f"```" + str(db_member.legendary_spikes()) + "```")
             embed.add_field(name="Weekly Ranks", value=f"```" + str(db_member.weekly_ranks_count()) + "```")

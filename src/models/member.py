@@ -21,6 +21,30 @@ class Member(BaseModel):
     created_at = DateTimeField()
     updated_at = DateTimeField(null=True)
 
+    @property
+    def api_key(self):
+        from src.models.api_key import ApiKey
+        ak = self.api_keys.where(ApiKey.primary == True).first()
+        if ak:
+            return ak.value
+        else:
+            return None
+
+    def list_gw2_api_keys(self):
+        return [api_key.value for api_key in self.api_keys]
+
+    def gw2_api_keys(self):
+        key_list = []
+        for api_key in self.api_keys:
+            key_list.append(
+                {
+                    "name": api_key.name,
+                    "value": api_key.value,
+                    "primary": api_key.primary
+                }
+            )
+        return key_list
+
     def total_count(self):
         return self.attendances.count()
 
@@ -72,8 +96,8 @@ class Member(BaseModel):
     def gw2_name(self):
         if self.gw2_username:
             return self.gw2_username
-        elif self.gw2_api_key:
-            gw2_username = GW2ApiClient(api_key=self.gw2_api_key).account()["name"]
+        elif self.api_key:
+            gw2_username = GW2ApiClient(api_key=self.api_key).account()["name"]
             self.gw2_username = gw2_username
             self.save()
             return gw2_username
@@ -81,16 +105,18 @@ class Member(BaseModel):
             return ""
 
     def legendary_spikes(self):
-        items = GW2ApiClient(api_key=self.gw2_api_key).bank()
-        legendary_spike_id = 81296
         count = 0
-        for item in items:
-            if item["id"] == legendary_spike_id:
-                count += item["count"]
+        legendary_spike_id = 81296
+        for api_key in self.api_keys:
+            items = api_key.api_client().bank()
+
+            for item in items:
+                if item["id"] == legendary_spike_id:
+                    count += item["count"]
         return count
 
     def gifts_of_battle(self):
-        items = GW2ApiClient(api_key=self.gw2_api_key).bank()
+        items = GW2ApiClient(api_key=self.api_key).bank()
         gift_of_battle_id = 19678
         count = 0
         for item in items:
@@ -99,11 +125,11 @@ class Member(BaseModel):
         return count
 
     def supply_spent(self):
-        repairs = GW2ApiClient(api_key=self.gw2_api_key).account_achievements(name="Repair Master")
+        repairs = GW2ApiClient(api_key=self.api_key).account_achievements(name="Repair Master")
         return repairs[0]["current"]
 
     def yak_escorts(self):
-        yaks = GW2ApiClient(api_key=self.gw2_api_key).account_achievements(name="A Pack Dolyak's Best Friend")
+        yaks = GW2ApiClient(api_key=self.api_key).account_achievements(name="A Pack Dolyak's Best Friend")
         return yaks[0]["current"]
 
     @staticmethod

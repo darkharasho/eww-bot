@@ -11,7 +11,7 @@ tree = bot.tree
 
 
 async def calculate_leaderboard(name, data):
-    members = Member.select().where(Member.gw2_api_key.is_null(False))
+    members = list(set([api_key.member for api_key in ApiKey.select()]))
     leaderboard = []
     for member in members:
         leaderboard.append([member.username, member.gw2_name(), getattr(member, data)()])

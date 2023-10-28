@@ -29,6 +29,7 @@ from src.models.member import Member
 from src.models.attendance import Attendance
 from src.models.arcdps import ArcDPS
 from src.models.feed import Feed
+from src.models.api_key import ApiKey
 from playhouse.sqlite_ext import *
 from playhouse.migrate import *
 

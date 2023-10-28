@@ -14,7 +14,6 @@ class StatUpdaterTask(commands.Cog):
         self.bot = bot
         self.update_stats.start()
         self.guild = self.bot.get_guild(settings.GUILD_ID)
-        self.api_client = GW2ApiClient(api_key=api_key)
 
     def cog_unload(self):
         self.update_stats.cancel()
@@ -26,13 +25,11 @@ class StatUpdaterTask(commands.Cog):
 
     async def bulk_update(self):
         print("[GW2 SYNC]".ljust(20) + f"🟢 STARTED")
-        members = Member.select().where(Member.gw2_api_key.is_null(False))
+        members = list(set([api_key.member for api_key in ApiKey.select()]))
 
-        # for i in tqdm(range(len(members)), desc="[GW2 SYNC]     "):
         for index, member in enumerate(members, start=1):
             try:
                 start_time = datetime.datetime.now()
-                self.api_client = GW2ApiClient(api_key=member.gw2_api_key)
                 await self.update_kill_count(member)
                 await self.update_capture_count(member)
                 await self.update_rank_count(member)
@@ -48,40 +45,51 @@ class StatUpdaterTask(commands.Cog):
 
     async def update_kill_count(self, member):
         member = Member.get(Member.id == member.id)
-        avenger_stats = await self.api_client.aio_account_achievements(name="Emblem of the Avenger")
-        kills = avenger_stats[0]["current"] + (avenger_stats[0]["repeated"] * 100)
+        kills = 0
+        for api_key in member.api_keys:
+            avenger_stats = await GW2ApiClient(api_key=api_key.value).aio_account_achievements(name="Realm Avenger")
+            kills += avenger_stats[0]["current"]
         await self.update(member=member, stat_name="kills", stat=kills)
 
     async def update_capture_count(self, member):
         member = Member.get(Member.id == member.id)
-        conqueror = await self.api_client.aio_account_achievements(name="Emblem of the Conqueror")
-        captures = conqueror[0]["current"] + (conqueror[0]["repeated"] * 100)
+        captures = 0
+        for api_key in member.api_keys:
+            conqueror = await GW2ApiClient(api_key=api_key.value).aio_account_achievements(name="Emblem of the Conqueror")
+            captures += conqueror[0]["current"] + (conqueror[0]["repeated"] * 100)
         await self.update(member=member, stat_name="captures", stat=captures)
 
     async def update_rank_count(self, member):
         member = Member.get(Member.id == member.id)
-        account = await self.api_client.aio_account()
-        wvw_ranks = account["wvw_rank"]
+        wvw_ranks = 0
+        for api_key in member.api_keys:
+            account = await GW2ApiClient(api_key=api_key.value).aio_account()
+            wvw_ranks += account["wvw_rank"]
         await self.update(member=member, stat_name="wvw_ranks", stat=wvw_ranks)
 
     async def update_deaths_count(self, member):
         member = Member.get(Member.id == member.id)
-        characters = await self.api_client.aio_characters(ids="all")
         deaths = 0
-        for character in characters:
-            deaths += character["deaths"]
+        for api_key in member.api_keys:
+            characters = await GW2ApiClient(api_key=api_key.value).aio_characters(ids="all")
+            for character in characters:
+                deaths += character["deaths"]
         await self.update(member=member, stat_name="deaths", stat=deaths)
 
     async def update_supply_spent(self, member):
         member = Member.get(Member.id == member.id)
-        repair_master = await self.api_client.aio_account_achievements(name="Repair Master")
-        supply = repair_master[0]["current"]
+        supply = 0
+        for api_key in member.api_keys:
+            repair_master = await GW2ApiClient(api_key=api_key.value).aio_account_achievements(name="Repair Master")
+            supply += repair_master[0]["current"]
         await self.update(member=member, stat_name="supply", stat=supply)
 
     async def update_yaks_escorted(self, member):
         member = Member.get(Member.id == member.id)
-        yak_escorts = await self.api_client.aio_account_achievements(name="A Pack Dolyak's Best Friend")
-        yaks = yak_escorts[0]["current"]
+        yaks = 0
+        for api_key in member.api_keys:
+            yak_escorts = await GW2ApiClient(api_key=api_key.value).aio_account_achievements(name="A Pack Dolyak's Best Friend")
+            yaks += yak_escorts[0]["current"]
         await self.update(member=member, stat_name="yaks", stat=yaks)
 
     @staticmethod

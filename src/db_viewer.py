@@ -20,7 +20,7 @@ class DBViewer:
                 member.updated_at,
                 member.guild_id,
                 member.discord_id,
-                member.gw2_api_key,
+                json.dumps(member.gw2_api_keys(), indent=4),
                 json.dumps(member.gw2_stats, indent=4)
             ]
         ]
@@ -103,7 +103,7 @@ class DBViewer:
                     mem.updated_at,
                     mem.guild_id,
                     mem.discord_id,
-                    mem.gw2_api_key,
+                    json.dumps(mem.gw2_api_keys(), indent=4),
                     json.dumps(mem.gw2_stats, indent=4)
                 ]
             )
