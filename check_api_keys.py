@@ -51,7 +51,7 @@ def migrate_api_keys():
     members = Member.select().where(Member.gw2_api_key.is_null(False))
     # members = list(set([api_key.member for api_key in ApiKey.select()]))
     for member in members:
-        ApiKey.find_or_create(member=member, value=member.gw2_api_key)
+        ApiKey.find_or_create(member=member, value=member.gw2_api_key, primary=True)
 
 
 if __name__ == '__main__':
