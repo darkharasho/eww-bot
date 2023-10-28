@@ -73,7 +73,9 @@ if __name__ == '__main__':
             elif api_action == "migrate":
                 migrate_api_keys()
             elif api_action == "reset":
-                confirm = input(">> This will reset everyone's weekly stats. Type Y to confirm:")
+                confirm = input(">> This will reset everyone's weekly stats. Type Y to confirm: ")
                 if confirm == "Y" or confirm == "y":
                     reset_weeklies()
+                else:
+                    print("Weekly Reset Stats Cancelled.")
             verify_type = False
