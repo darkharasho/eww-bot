@@ -56,7 +56,6 @@ def reset_weeklies():
 
 def migrate_api_keys():
     members = Member.select().where(Member.gw2_api_key.is_null(False))
-    # members = list(set([api_key.member for api_key in ApiKey.select()]))
     for member in members:
         ApiKey.find_or_create(member=member, value=member.gw2_api_key, primary=True)
 
@@ -64,13 +63,17 @@ def migrate_api_keys():
 if __name__ == '__main__':
     verify_type = True
     while verify_type:
-        print(f"Available Options: [check, migrate]")
+        print(f"Available Options: [check, migrate, reset]")
         api_action = input(">> Option: ")
-        if api_action not in ["check", "migrate"]:
+        if api_action not in ["check", "migrate", "reset"]:
             print("Invalid Selection.")
         else:
             if api_action == "check":
                 check_api_keys()
             elif api_action == "migrate":
                 migrate_api_keys()
+            elif api_action == "reset":
+                confirm = input(">> This will reset everyone's weekly stats. Type Y to confirm:")
+                if confirm == "Y" or confirm == "y":
+                    reset_weeklies()
             verify_type = False
