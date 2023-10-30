@@ -2,6 +2,8 @@
 import importlib
 import os
 import uvicorn
+import random
+
 from config.imports import *
 from discord.ext import commands
 from src import settings
