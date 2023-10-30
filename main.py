@@ -100,7 +100,10 @@ async def on_message(message):
                     else:
                         await conversation_client.chunked_converse(message.author, message)
             else:
-                await conversation_client.chunked_converse(message.author, message)
+                if "fleas" in message.author:
+                    message.channel.send("Haro sends his regards. No more draining my credits, flis.")
+                else:
+                    await conversation_client.chunked_converse(message.author, message)
         else:
             await message.channel.send("I'm sorry Dave, I can't let you do that.")
     await bot.process_commands(message)
