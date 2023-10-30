@@ -93,16 +93,17 @@ async def load_views():
 
 @bot.event
 async def on_message(message):
+    percentage_chance = rand(1, 100)
     if bot.user.mentioned_in(message):
         if settings.OPEN_AI_KEY:
             if Config.bot_chat_channel_ids():
                 if message.channel.id in Config.bot_chat_channel_ids():
-                    if "fleas" in message.author.name and random.randint(0, 10) % 2 == 0:
+                    if "fleas" in message.author.name and random.randint(1, 100) <= percentage_chance:
                         await message.channel.send("Haro sends his regards. No more draining my credits, flis.")
                     else:
                         await conversation_client.chunked_converse(message.author, message)
             else:
-                if "fleas" in message.author.name and random.randint(0, 10) % 2 == 0:
+                if "fleas" in message.author.name and random.randint(1, 100) <= percentage_chance:
                     await message.channel.send("Haro sends his regards. No more draining my credits, flis.")
                 else:
                     await conversation_client.chunked_converse(message.author, message)
