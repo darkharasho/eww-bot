@@ -93,7 +93,7 @@ async def load_views():
 
 @bot.event
 async def on_message(message):
-    percentage_chance = rand(1, 100)
+    percentage_chance = random.randint(1, 100)
     if bot.user.mentioned_in(message):
         if settings.OPEN_AI_KEY:
             if Config.bot_chat_channel_ids():
