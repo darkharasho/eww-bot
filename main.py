@@ -100,12 +100,12 @@ async def on_message(message):
             if Config.bot_chat_channel_ids():
                 if message.channel.id in Config.bot_chat_channel_ids():
                     if "fleas" in message.author.name and random.randint(1, 100) <= percentage_chance:
-                        await Catfact.catfact(message.channel)
+                        await CatFact.catfact(message.channel)
                     else:
                         await conversation_client.chunked_converse(message.author, message)
             else:
                 if "fleas" in message.author.name and random.randint(1, 100) <= percentage_chance:
-                    await Catfact.catfact(message.channel)
+                    await CatFact.catfact(message.channel)
                 else:
                     await conversation_client.chunked_converse(message.author, message)
         else:
