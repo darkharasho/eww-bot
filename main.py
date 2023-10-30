@@ -96,8 +96,9 @@ async def on_message(message):
             if Config.bot_chat_channel_ids():
                 if message.channel.id in Config.bot_chat_channel_ids():
                     if "fleas" in message.author:
-                        message.channel.send("Lol harasho sends his regards. No more draining my credits, flis.")
-                    await conversation_client.chunked_converse(message.author, message)
+                        message.channel.send("Haro sends his regards. No more draining my credits, flis.")
+                    else:
+                        await conversation_client.chunked_converse(message.author, message)
             else:
                 await conversation_client.chunked_converse(message.author, message)
         else:
