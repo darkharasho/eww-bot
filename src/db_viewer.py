@@ -119,3 +119,27 @@ class DBViewer:
             return member_data
         else:
             print(table)
+
+    def feeds(self):
+        feeds = Feed.select()
+        feed_data = []
+        for feed in feeds:
+            feed_data.append(
+                [
+                    feed.name,
+                    feed.guild_id,
+                    feed.modified,
+                ]
+            )
+        feed_headers = ["Name", "Guild ID", "Modified"]
+
+        table = tabulate(
+            feed_data,
+            feed_headers,
+            tablefmt="psql"
+        )
+
+        if self.return_string:
+            return feed_data
+        else:
+            print(table)
