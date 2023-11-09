@@ -126,12 +126,13 @@ class DBViewer:
         for feed in feeds:
             feed_data.append(
                 [
+                    feed.id,
                     feed.name,
                     feed.guild_id,
                     feed.modified,
                 ]
             )
-        feed_headers = ["Name", "Guild ID", "Modified"]
+        feed_headers = ["ID", "Name", "Guild ID", "Modified"]
 
         table = tabulate(
             feed_data,
