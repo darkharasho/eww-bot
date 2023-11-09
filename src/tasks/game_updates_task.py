@@ -89,7 +89,7 @@ class GameUpdatesTask(commands.Cog):
                         return
 
                 if db_feed_name == "studio_updates":
-                    if "Studio Update:" in entry.title:
+                    if [item for item in ["Studio Update", "Live Now"] if item in entry.title]:
                         cleantext = BeautifulSoup(entry.content[0]["value"], "html.parser").text
                     else:
                         continue
