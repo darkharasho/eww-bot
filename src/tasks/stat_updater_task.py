@@ -26,20 +26,35 @@ class StatUpdaterTask(commands.Cog):
     async def bulk_update(self):
         print("[GW2 SYNC]".ljust(20) + f"🟢 STARTED")
         members = list(set([api_key.member for api_key in ApiKey.select()]))
+        progress = {
+            "kills": False,
+            "captures": False,
+            "ranks": False,
+            "deaths": False,
+            "supply": False,
+            "yaks": False,
+        }
 
         for index, member in enumerate(members, start=1):
             try:
                 start_time = datetime.datetime.now()
                 await self.update_kill_count(member)
+                progress["kills"] = True
                 await self.update_capture_count(member)
+                progress["captures"] = True
                 await self.update_rank_count(member)
+                progress["ranks"] = True
                 await self.update_deaths_count(member)
+                progress["deaths"] = True
                 await self.update_supply_spent(member)
+                progress["supply"] = True
                 await self.update_yaks_escorted(member)
+                progress["yaks"] = True
                 print(f"[GW2 SYNC]".ljust(20) + f"🟢 ({index}/{len(members)}) {member.username}: {datetime.datetime.now() - start_time}")
             except Exception as e:
                 print(f"[GW2 SYNC]".ljust(20) + f"🔴 ({index}/{len(members)}) {member.username}: {datetime.datetime.now() - start_time}")
                 print(" ".ljust(23) + f"[ERR] {e}")
+                print(" ".ljust(23) + f"[PROGRESS] {progress}")
 
         print("[GW2 SYNC]".ljust(20) + f"🟢 DONE")
 
@@ -56,7 +71,7 @@ class StatUpdaterTask(commands.Cog):
         captures = 0
         for api_key in member.api_keys:
             conqueror = await GW2ApiClient(api_key=api_key.value).aio_account_achievements(name="Emblem of the Conqueror")
-            captures += conqueror[0]["current"] + (conqueror[0]["repeated"] * 100)
+            captures += conqueror[0]["current"] + (conqueror[0].get("repeated", 0) * 100)
         await self.update(member=member, stat_name="captures", stat=captures)
 
     async def update_rank_count(self, member):
