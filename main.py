@@ -95,7 +95,7 @@ async def load_views():
 @bot.event
 async def on_message(message):
     percentage_chance = random.randint(1, 100)
-    if bot.user.mentioned_in(message):
+    if bot.user.mentioned_in(message) and "@everyone" not in message.content:
         if settings.OPEN_AI_KEY:
             if Config.bot_chat_channel_ids():
                 if message.channel.id in Config.bot_chat_channel_ids():
@@ -157,6 +157,7 @@ async def run():
         await bot.start(settings.TOKEN)
     except KeyboardInterrupt:
         await bot.logout()
+
 
 if os.environ.get("BOT_ONLY", False):
     bot.run(settings.TOKEN)
