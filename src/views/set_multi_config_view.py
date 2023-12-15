@@ -106,7 +106,8 @@ class SetMultiConfigView(discord.ui.View):
                     for field in embed.fields:
                         for chnl in field.value.split("\n"):
                             if chnl.startswith(f"`{msg.content}`"):
-                                channel_name = chnl.split(" - ")[-1]
+                                split_chnl_name = chnl.split(" - ")
+                                channel_name = ' - '.join(split_chnl_name[1:]).strip()
                     content = helpers.get_by_name(self.guild.text_channels, channel_name).id
                 elif self.response_type == "roles":
                     role_names = []
@@ -115,7 +116,9 @@ class SetMultiConfigView(discord.ui.View):
                         for field in embed.fields:
                             for role in field.value.split("\n"):
                                 if role.startswith(f"`{opt}`"):
-                                    role_names.append(role.split(" - ")[-1])
+                                    split_role_name = role.split(" - ")
+                                    role_name = ' - '.join(split_role_name[1:])
+                                    role_names.append(role_name)
                     content = [role.id for role in helpers.get_by_list_of_names(self.guild.roles, role_names)]
                 elif self.response_type == "gw2_classes":
                     content = []
