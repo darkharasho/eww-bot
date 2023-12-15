@@ -26,9 +26,8 @@ BOT_ONLY=true PYTHONSTARTUP=main.py python
 
 ## Todo list
 
-- [ ] Look into per user editing of attendance or something
 - [ ] add optional description to the google sheet and import-builds
 - [ ] Command to make a builds channel
-- [x] Add vod review tracking
-- [ ] Multiple API keys
 - [ ] Guild Rank Verification
+- [ ] Allow pingable role for ArcDPS notifications
+- [ ] Limit bot commands to a set of channels
