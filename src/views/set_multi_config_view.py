@@ -124,7 +124,8 @@ class SetMultiConfigView(discord.ui.View):
                                 if chnl.startswith(f"`{opt}`"):
                                     split_chnl_name = chnl.split(" - ")
                                     channel_name = ' - '.join(split_chnl_name[1:]).strip()
-                            channel_names.append(helpers.get_by_name(self.guild.text_channels, channel_name).id)
+                            if channel_name:
+                                channel_names.append(helpers.get_by_name(self.guild.text_channels, channel_name).id)
                     content = channel_names
                 elif self.response_type == "roles":
                     role_names = []

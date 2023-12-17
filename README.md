@@ -30,4 +30,4 @@ BOT_ONLY=true PYTHONSTARTUP=main.py python
 - [ ] Command to make a builds channel
 - [ ] Guild Rank Verification
 - [ ] Allow pingable role for ArcDPS notifications
-- [ ] Limit bot commands to a set of channels
+- [x] Limit bot commands to a set of channels
