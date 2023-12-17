@@ -69,7 +69,11 @@ async def ensure_allowed_channel(interaction, command_channel_ids=None):
     if Config.user_allowed_channels() and channel.id not in Config.user_allowed_channels(nested_cfg=[command_channel_ids]):
         if command_channel_ids == "chat_channel_ids":
             return False
-        embed = discord.Embed(title="Unauthorized", description="This command cannot be run in this channel.",
+        channels = []
+        for channel_id in Config.user_allowed_channels(nested_cfg=[command_channel_ids]):
+            channels.append(interaction.guild.get_channel(channel_id).mention)
+        embed = discord.Embed(title="Unauthorized",
+                              description=f"This command cannot be run in this channel.\n\n**Allowed Channels:**\n" + "\n".join(channels),
                               color=0xff0000)
 
         file_name = helpers.select_icon("unauthorized")
