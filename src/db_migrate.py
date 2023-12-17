@@ -28,8 +28,7 @@ class DBMigrate:
             else:
                 with self.db.atomic():
                     migrate(
-                        migrator.drop_column('feed', 'modified'),
-                        migrator.add_column('feed', 'modified', Feed.modified)
+                        migrator.alter_column_type('feed', 'modified', DateTimeField(null=True))
                     )
                     migrations.append(["🟢", "Feed", "modified"])
         except OperationalError as oe:
