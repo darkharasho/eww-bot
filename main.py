@@ -94,23 +94,24 @@ async def load_views():
 
 @bot.event
 async def on_message(message):
-    percentage_chance = random.randint(1, 100)
-    if bot.user.mentioned_in(message) and "@everyone" not in message.content:
-        if settings.OPEN_AI_KEY:
-            if Config.bot_chat_channel_ids():
-                if message.channel.id in Config.bot_chat_channel_ids():
+    if await authorization.ensure_allowed_channel(message, "chat_channel_ids"):
+        percentage_chance = random.randint(1, 100)
+        if bot.user.mentioned_in(message) and "@everyone" not in message.content:
+            if settings.OPEN_AI_KEY:
+                if Config.bot_chat_channel_ids():
+                    if message.channel.id in Config.bot_chat_channel_ids():
+                        if "fleas" in message.author.name and random.randint(1, 100) <= percentage_chance:
+                            await CatFact.catfact(message.channel)
+                        else:
+                            await conversation_client.chunked_converse(message.author, message)
+                else:
                     if "fleas" in message.author.name and random.randint(1, 100) <= percentage_chance:
                         await CatFact.catfact(message.channel)
                     else:
                         await conversation_client.chunked_converse(message.author, message)
             else:
-                if "fleas" in message.author.name and random.randint(1, 100) <= percentage_chance:
-                    await CatFact.catfact(message.channel)
-                else:
-                    await conversation_client.chunked_converse(message.author, message)
-        else:
-            await message.channel.send("I'm sorry Dave, I can't let you do that.")
-    await bot.process_commands(message)
+                await message.channel.send("I'm sorry Dave, I can't let you do that.")
+        await bot.process_commands(message)
 
 
 @app.get("/modules")

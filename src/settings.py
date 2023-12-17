@@ -180,6 +180,24 @@ SET_COMMANDER_ROLES = [
     }
 ]
 
+SET_USER_CHANNELS = [
+    {
+        "text": "# Leaderboard\n### Channels to allow users to use the /leaderboard command",
+        "field_type": "input",
+        "response_type": "text_channels"
+    },
+    {
+        "text": "# Funderboard\n### Channels to allow users to use the /funderboard command",
+        "field_type": "input",
+        "response_type": "text_channels"
+    },
+    {
+        "text": "# Chat\n### Channels to allow users to chat with the bot",
+        "field_type": "input",
+        "response_type": "text_channels"
+    }
+]
+
 # Constants
 CLASS_COLORS = {
     "Warrior": 0xFFD166,

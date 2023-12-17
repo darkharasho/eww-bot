@@ -4,6 +4,7 @@ from config.imports import *
 from discord.ext import commands
 from src import settings
 from src import helpers
+from src import authorization
 from src.gw2_api_client import GW2ApiClient
 from src.bot_client import bot
 
@@ -44,19 +45,20 @@ class FunderboardCog(commands.Cog):
         guild=discord.Object(id=settings.GUILD_ID)
     )
     async def funderboard(self, interaction):
-        await interaction.response.defer()
-        spike_table =  await calculate_leaderboard("Spikes", "legendary_spikes")
-        supply_table = await calculate_leaderboard("Supply", "weekly_supply_spent")
-        yak_table =    await calculate_leaderboard("Yaks", "weekly_yaks_escorted")
+        if await authorization.ensure_allowed_channel(interaction, "funderboard_channel_ids"):
+            await interaction.response.defer()
+            spike_table =  await calculate_leaderboard("Spikes", "legendary_spikes")
+            supply_table = await calculate_leaderboard("Supply", "weekly_supply_spent")
+            yak_table =    await calculate_leaderboard("Yaks", "weekly_yaks_escorted")
 
-        embed = discord.Embed(
-            title="🎉 Funderboard",
-            description=f"**🏆 Legendary Spikes:**```{spike_table}```\n"
-                        f"**📦 Weekly Repair Masters:**```{supply_table}```\n"
-                        f"**🐄 Weekly Yak Escorts:**```{yak_table}```\n"
-        )
+            embed = discord.Embed(
+                title="🎉 Funderboard",
+                description=f"**🏆 Legendary Spikes:**```{spike_table}```\n"
+                            f"**📦 Weekly Repair Masters:**```{supply_table}```\n"
+                            f"**🐄 Weekly Yak Escorts:**```{yak_table}```\n"
+            )
 
-        await interaction.followup.send(embed=embed)
+            await interaction.followup.send(embed=embed)
 
 
 async def setup(bot):

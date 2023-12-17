@@ -52,6 +52,11 @@ class SetMultiConfigView(discord.ui.View):
                     items=[channel.name for channel in self.guild.text_channels],
                     embed=embed
                 )
+            elif self.response_type == "text_channels":
+                embed = self.build_text_channel_picker(
+                    items=[channel.name for channel in self.guild.text_channels],
+                    embed=embed
+                )
             elif self.response_type == "roles":
                 embed = self.build_text_channel_picker(
                     items=[role.name for role in self.guild.roles],
@@ -109,6 +114,18 @@ class SetMultiConfigView(discord.ui.View):
                                 split_chnl_name = chnl.split(" - ")
                                 channel_name = ' - '.join(split_chnl_name[1:]).strip()
                     content = helpers.get_by_name(self.guild.text_channels, channel_name).id
+                elif self.response_type == "text_channels":
+                    channel_names = []
+                    content = list(set(filter(None, re.sub(r'[ ,]', ', ', msg.content).split(", "))))
+                    for opt in content:
+                        for field in embed.fields:
+                            channel_name = None
+                            for chnl in field.value.split("\n"):
+                                if chnl.startswith(f"`{opt}`"):
+                                    split_chnl_name = chnl.split(" - ")
+                                    channel_name = ' - '.join(split_chnl_name[1:]).strip()
+                            channel_names.append(helpers.get_by_name(self.guild.text_channels, channel_name).id)
+                    content = channel_names
                 elif self.response_type == "roles":
                     role_names = []
                     content = list(set(filter(None, re.sub(r'[ ,]', ', ', msg.content).split(", "))))
@@ -188,6 +205,9 @@ class SetMultiConfigView(discord.ui.View):
                 return re.match(pattern, msg.content)
             elif self.response_type == "text_channel":
                 pattern = r"^\d+$"
+                return re.match(pattern, msg.content)
+            elif self.response_type == "text_channels":
+                pattern = r"^(\d+[, ]*\d*)+$"
                 return re.match(pattern, msg.content)
             elif self.response_type == "roles" or self.response_type == "gw2_classes":
                 pattern = r"^(\d+[, ]*\d*)+$"

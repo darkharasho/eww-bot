@@ -1,3 +1,5 @@
+import pdb
+
 import discord
 from src import settings
 from src import helpers
@@ -51,6 +53,23 @@ async def ensure_commander(interaction):
 
     if not any(role_id in all_allowed_role_ids for role_id in user_role_ids):
         embed = discord.Embed(title="Unauthorized", description="You do not have permission to run this command.",
+                              color=0xff0000)
+
+        file_name = helpers.select_icon("unauthorized")
+        file = discord.File(file_name)
+        embed.set_thumbnail(url=f"attachment://{file.filename}")
+        await interaction.response.send_message(
+            embed=embed, file=file, ephemeral=True)
+        return False
+    return True
+
+
+async def ensure_allowed_channel(interaction, command_channel_ids=None):
+    channel = interaction.channel
+    if Config.user_allowed_channels() and channel.id not in Config.user_allowed_channels(nested_cfg=[command_channel_ids]):
+        if command_channel_ids == "chat_channel_ids":
+            return False
+        embed = discord.Embed(title="Unauthorized", description="This command cannot be run in this channel.",
                               color=0xff0000)
 
         file_name = helpers.select_icon("unauthorized")

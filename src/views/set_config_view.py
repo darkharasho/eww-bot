@@ -64,7 +64,11 @@ options = [
     SelectOption(label="Setup Game Update Notifications",
                  value="GameUpdates",
                  description="Sets up automatic notifications for Guild Wars 2 updates",
-                 emoji="📰")
+                 emoji="📰"),
+    SelectOption(label="Setup User Allowed Channels",
+                 value="UserAllowedChannels",
+                 description="Limit which channels commands that can be run by anyone are allowed in",
+                 emoji="🤖")
 ]
 
 
@@ -288,6 +292,23 @@ class SetConfigView(discord.ui.View):
             await self.handle_multi_question_response(name="raid_notification", answers=answers,
                                                       description="```Raid Notification:\nConfiguration for tagging "
                                                                   "up notifications.```")
+
+        elif selected_option == "UserAllowedChannels":
+            answer_key = ["leaderboard_channel_ids", "funderboard_channel_ids", "chat_channel_ids"]
+            answers = {}
+            for index, question in enumerate(settings.SET_USER_CHANNELS, start=0):
+                question_view = set_multi_config_view.SetMultiConfigView(config_name=selected_option,
+                                                                         question=question,
+                                                                         channel=interaction.channel,
+                                                                         user=interaction.user)
+                answer = await question_view.send_question(index)
+                answers[answer_key[index]] = answer
+                if answer == "APPLICATION_CANCEL":
+                    break
+
+            await self.handle_multi_question_response(name="user_allowed_channels", answers=answers,
+                                                      description="```User Allowed Channels:\nChoose which channels a "
+                                                                  "user can interact with the bot in.```")
 
         elif selected_option == "ArcdpsUpdates":
             answer_key = ["enabled", "channel_id"]

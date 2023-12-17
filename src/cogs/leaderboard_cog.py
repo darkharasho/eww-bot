@@ -4,6 +4,7 @@ from config.imports import *
 from discord.ext import commands
 from src import settings
 from src import helpers
+from src import authorization
 from src.gw2_api_client import GW2ApiClient
 from src.bot_client import bot
 tabulate.PRESERVE_WHITESPACE = True
@@ -42,19 +43,20 @@ class LeaderboardCog(commands.Cog):
         guild=discord.Object(id=settings.GUILD_ID)
     )
     async def leaderboard(self, interaction):
-        await interaction.response.defer()
-        kill_table = await calculate_leaderboard("Kills", "weekly_kill_count")
-        kdr_table = await calculate_leaderboard("KDR", "weekly_kdr")
-        capture_table = await calculate_leaderboard("Captures", "weekly_capture_count")
+        if await authorization.ensure_allowed_channel(interaction, "leaderboard_channel_ids"):
+            await interaction.response.defer()
+            kill_table = await calculate_leaderboard("Kills", "weekly_kill_count")
+            kdr_table = await calculate_leaderboard("KDR", "weekly_kdr")
+            capture_table = await calculate_leaderboard("Captures", "weekly_capture_count")
 
-        embed = discord.Embed(
-            title="📊 Weekly Leaderboard",
-            description=f"**⚔️ Kills:**```{kill_table}```"
-                        f"\n**🧿 KDR:**```{kdr_table}```"
-                        f"\n**🏰 Captures:**```{capture_table}```"
-        )
+            embed = discord.Embed(
+                title="📊 Weekly Leaderboard",
+                description=f"**⚔️ Kills:**```{kill_table}```"
+                            f"\n**🧿 KDR:**```{kdr_table}```"
+                            f"\n**🏰 Captures:**```{capture_table}```"
+            )
 
-        await interaction.followup.send(embed=embed)
+            await interaction.followup.send(embed=embed)
 
 
 async def setup(bot):
