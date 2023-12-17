@@ -6,4 +6,4 @@ from src.models.base_model import BaseModel
 class Feed(BaseModel):
     name = CharField(unique=True)
     guild_id = IntegerField()
-    modified = CharField()
+    modified = DateTimeField(null=True)

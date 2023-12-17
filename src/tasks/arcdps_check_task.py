@@ -54,6 +54,7 @@ class ArcDpsCheckTask(commands.Cog):
 
                     channel = self.guild.get_channel(Config.arcdps_updates(nested_cfg=["channel_id"]))
                     await channel.send(embed=embed, file=file)
+                print(f"[ARCDPS UPDATES]".ljust(20) + f"⚔️ Checked at {db_arcdps.last_updated_at}")
             else:
                 ArcDPS.create(last_updated_at=last_updated_at)
 

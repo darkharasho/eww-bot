@@ -22,6 +22,19 @@ class DBMigrate:
         except OperationalError as oe:
             migrations.append(["🟡", "Member", "user_id"])
             pass
+        try:
+            if Feed.modified == DateTimeField():
+                migrations.append(["🟡", "Feed", "modified"])
+            else:
+                with self.db.atomic():
+                    migrate(
+                        migrator.drop_column('feed', 'modified'),
+                        migrator.add_column('feed', 'modified', Feed.modified)
+                    )
+                    migrations.append(["🟢", "Feed", "modified"])
+        except OperationalError as oe:
+            migrations.append(["🟡", "Feed", "modified"])
+            pass
 
         return migrations
 

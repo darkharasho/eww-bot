@@ -1,5 +1,6 @@
 import feedparser
 import requests
+import peewee
 
 from config.imports import *
 from discord.ext import commands, tasks
@@ -38,24 +39,28 @@ class GameUpdatesTask(commands.Cog):
                 db_feed_name="wvw_updates",
                 feed_url=wvw_feed_url
             )
-            await self.parse_feed(
-                feed_name="Studio Updates",
-                db_feed_name="studio_updates",
-                feed_url=studio_feed_url
-            )
+            # await self.parse_feed(
+            #     feed_name="Dev Tracker - Studio Updates",
+            #     db_feed_name="studio_updates",
+            #     feed_url=studio_feed_url
+            # )
 
     async def parse_feed(self, feed_name=None, db_feed_name=None, feed_url=None):
         db_feed = Feed.select().where(Feed.name == db_feed_name).first()
+        date_format = "%a, %d %b %Y %H:%M:%S %Z"
         if db_feed:
             first_time = False
             post = feedparser.parse(feed_url, modified=db_feed.modified)
             prev_modified = db_feed.modified  # Store so we can check for new items
-            db_feed.modified = post['headers']['date']
+            db_feed.modified = datetime.datetime.strptime(post['headers']['date'], date_format)
             db_feed.save()
         else:
             first_time = True
             post = feedparser.parse(feed_url)
-            modified = post['headers']['date'] if db_feed_name == "studio_updates" else post.modified
+            if db_feed_name == "studio_updates":
+                modified = datetime.datetime.strptime(post['headers']['date'], date_format)
+            else:
+                modified = datetime.datetime.strptime(post.modified, date_format)
             db_feed = Feed.create(name=db_feed_name, modified=modified, guild_id=settings.GUILD_ID)
         entries = post.entries
 
@@ -72,9 +77,7 @@ class GameUpdatesTask(commands.Cog):
                 for entry in entries:
                     entry_published = datetime.datetime.strptime(entry.published.replace(" +0000", ""),
                                                                  '%a, %d %b %Y %H:%M:%S')
-                    db_modified = datetime.datetime.strptime(prev_modified.replace(" GMT", ""),
-                                                             '%a, %d %b %Y %H:%M:%S')
-                    if entry_published > db_modified:
+                    if entry_published > prev_modified:
                         updated_entries.append(entry)
             for entry in updated_entries:
                 if db_feed_name == "wvw_updates":
@@ -92,6 +95,7 @@ class GameUpdatesTask(commands.Cog):
                     if [item for item in ["Studio Update", "Live Now"] if item in entry.title]:
                         cleantext = BeautifulSoup(entry.content[0]["value"], "html.parser").text
                     else:
+                        pdb.set_trace()
                         continue
                 else:
                     cleantext = entry.summary
@@ -121,7 +125,10 @@ class GameUpdatesTask(commands.Cog):
                 embed.set_thumbnail(url=f"attachment://{file.filename}")
 
                 channel = self.guild.get_channel(Config.game_updates(nested_cfg=["channel_id"]))
+                print(f"[GAME UPDATES]".ljust(20) + f"📰 {feed_name} ❗ Found Updates -  {db_feed.modified}")
                 await channel.send(embed=embed, file=file)
+        else:
+            print(f"[GAME UPDATES]".ljust(20) + f"📰 {feed_name} - {db_feed.modified}")
 
 
 async def setup(bot):
