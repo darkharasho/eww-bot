@@ -53,7 +53,8 @@ class FunderboardCog(commands.Cog):
 
             embed = discord.Embed(
                 title="🎉 Funderboard",
-                description=f"**🏆 Legendary Spikes:**```{spike_table}```\n"
+                description=f"〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️"
+                            f"**🏆 Legendary Spikes:**```{spike_table}```\n"
                             f"**📦 Weekly Repair Masters:**```{supply_table}```\n"
                             f"**🐄 Weekly Yak Escorts:**```{yak_table}```\n"
             )
