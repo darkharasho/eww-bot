@@ -51,7 +51,8 @@ class LeaderboardCog(commands.Cog):
 
             embed = discord.Embed(
                 title="📊 Weekly Leaderboard",
-                description=f"**⚔️ Kills:**```{kill_table}```"
+                description=f"〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️〰️"
+                            f"\n**⚔️ Kills: **```{kill_table}```"
                             f"\n**🧿 KDR:**```{kdr_table}```"
                             f"\n**🏰 Captures:**```{capture_table}```"
             )
