@@ -79,7 +79,7 @@ class StatUpdaterTask(commands.Cog):
         wvw_ranks = 0
         for api_key in member.api_keys:
             account = await GW2ApiClient(api_key=api_key.value).aio_account()
-            wvw_ranks += account["wvw_rank"]
+            wvw_ranks += account["wvw"]["rank"]
         await self.update(member=member, stat_name="wvw_ranks", stat=wvw_ranks)
 
     async def update_deaths_count(self, member):
