@@ -111,7 +111,7 @@ class GameUpdatesTask(commands.Cog):
                     title=entry.title,
                     url=entry.link,
                     description=re.sub(r'\n+', '\n', summary),
-                    color=0xd6a24a)
+                    color=0x458bb7)
                 embed.set_author(name=feed_name, icon_url=self.guild.icon.url)
                 # Convert the timestamp to a datetime object
                 datetime_obj = datetime.datetime.strptime(entry.published.replace(" +0000", ""), '%a, %d %b %Y %H:%M:%S')
@@ -120,7 +120,7 @@ class GameUpdatesTask(commands.Cog):
                 formatted_timestamp = datetime_obj.strftime('%a, %d %b %Y %I:%M:%S %p')
                 embed.set_footer(text=f"Eww Bot • {formatted_timestamp}")
 
-                file_name = helpers.select_icon("Secrets_of_the_Obscure_logo")
+                file_name = helpers.select_icon("Janthir_Wilds_logo.png")
                 file = discord.File(file_name)
                 embed.set_thumbnail(url=f"attachment://{file.filename}")
 
